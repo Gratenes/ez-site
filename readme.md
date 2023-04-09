@@ -21,9 +21,11 @@
 # How to use
 
 https://www.tiktok.com/@coldonestv/video/7219717130806201602
+
 would turn into ->
-[https://www.tiktok**ez
-**.com/@coldonestv/video/7219717130806201602](https://www.tiktokez.com/@coldonestv/video/7219717130806201602)
+
+[https://www.tiktok**ez**
+.com/@coldonestv/video/7219717130806201602](https://www.tiktokez.com/@coldonestv/video/7219717130806201602)
 
 # How to install (for own use)
 
