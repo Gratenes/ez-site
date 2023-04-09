@@ -1,6 +1,3 @@
-// This is the readme file for the project. for my embed progect
-// load this image https://i.imgur.com/9ym33Pv.png like its a github md file
-
 # Proper Embeds are COOL
 
 ## This is the current way tiktok embeds are done:
