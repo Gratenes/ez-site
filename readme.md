@@ -30,8 +30,8 @@ would turn into ->
 # How to install (for own use)
 
 ```bash
-git clone $this_repo
-cd better-embeds
+git clone https://github.com/Gratenes/better-embed.git
+cd better-embed
 npm install
 npm run build
 ```
