@@ -12,6 +12,7 @@ export default async function (pictures: string[], uuid: string): Promise<string
 
 		// Download the images
 		let downloadImages: string[] = []
+		if (!fs.existsSync('./storage')) fs.mkdirSync('./storage')
 		if (!fs.existsSync(`./storage/${uuid}`)) {
 			fs.mkdirSync(`./storage/${uuid}`)
 			fs.writeFile(outputVideo, '', () => {
