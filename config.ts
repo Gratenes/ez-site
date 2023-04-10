@@ -1,3 +1,3 @@
 export default {
-	'site': 'https://www.tiktokez.com'
+	'site': 'http://localhost:3000'
 }

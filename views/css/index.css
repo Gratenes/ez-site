@@ -1,0 +1,36 @@
+body {
+    background-color: rgb(8, 8, 8);
+    color: white;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-align: center;
+}
+.artplayer-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.artplayer-app {
+    height: 70vh;
+    width: 100vh;
+}
+.art-state {
+    display: none !important;
+}
+.creator-name {
+    font-size: 20px;
+    font-weight: bold;
+}
+.stats-container {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+}
+.stats-container > span {
+    background-color: #1a1a1a;
+    padding-inline: 15px;
+    border-radius: 10px;
+    padding-bottom: 5px;
+    padding-top: 5px;
+}

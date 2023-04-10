@@ -56,9 +56,8 @@ export default async function tiktokFetchCache(
 			try {
 				console.log("Cache miss");
 				const data = tiktokFetch(tiktokUrl);
-				cache.set(tiktokUrl, data, 60 * 60);
-				resolve(await data);
-
+					cache.set(tiktokUrl, data, 60 * 60);
+					resolve(await data);
 			} catch (error) {
 				reject(error);
 			}
@@ -149,20 +148,17 @@ async function tiktokFetch(tiktokUrl: string): Promise<{
 
 		tiktokUrl = getRealId;
 	}
-
-	const url = regexCheck([tiktokRegex, tiktokRegex2], tiktokUrl);
-	if (!url) throw {
-		message: 'Invalid URL - failed to match regex',
-		error: true,
-		code: 400,
+	let url;
+	let videoId;
+	try {
+		url = regexCheck([tiktokRegex, tiktokRegex2], tiktokUrl);
+		videoId = typeof url?.at(2) === 'string' ? url?.at(2) : url?.at(1) || false;
+	} catch (err) {
+		console.log(err);
 	}
 
-	const videoId = typeof url?.at(2) === 'string' ? url?.at(2) : url?.at(1) || false;
-	if (!videoId) throw {
-		message: 'Invalid URL - failed to get video ID',
-		error: true,
-		code: 400,
-	}
+
+
 
 
 	// Images logic for the picture tiktoks (not videos)
@@ -186,7 +182,6 @@ async function tiktokFetch(tiktokUrl: string): Promise<{
 	images = firstElement.image_post_info?.images?.map((image: any) => {
 		return image.display_image.url_list?.filter((url: string) => url.includes('jpeg'))?.at(0);
 	});
-
 	video = firstElement?.video?.play_addr.url_list?.filter((url: string) => url.includes('mp4'))?.at(0);
 
 	// Build the response object and return it
