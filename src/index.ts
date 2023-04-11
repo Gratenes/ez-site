@@ -2,21 +2,22 @@
 import express from 'express'
 import * as fs from 'fs';
 
-import convertToVideo from './tiktok/convertPictures'
-import fetchTiktok from "./tiktok/fetchTiktok";
+import convertToVideo from './components/tiktok/convertPictures'
+import fetchTiktok from "./components/tiktok/fetchTiktok";
+
+import settings from '../config'
+import path from 'path';
 
 const app = express()
 
-const settings = {
-	port: 3000,
-}
+app.set('views', path.join(__dirname, 'views'))
 
 app.get("/", (req, res) => {
 	return res.send("Hello World!")
 })
 
 app.get("/css/index.css", (req, res) => {
-	return res.sendFile(__dirname + "/views/css/index.css")
+	return res.sendFile(__dirname + "/styles/index.css")
 })
 
 app.get('/api/video', (req, res) => {
@@ -90,7 +91,7 @@ app.get('/*', async (req, res) => {
 		if (!formattedOutput.video) return res.sendStatus(404);
 
 		try {
-			res.render("index.ejs", {formattedOutput: formattedOutput});
+			res.render("tiktok/index.ejs", {formattedOutput: formattedOutput});
 		} catch (error) {
 			console.error('ERROR: ' + error);
 			res.status(500).send('Internal Server Error');

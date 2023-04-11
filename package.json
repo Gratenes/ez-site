@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "ts-node index"
+    "start": "ts-node src/index",
+    "build": "tsc"
   },
   "author": "",
   "license": "ISC",
@@ -17,7 +18,8 @@
     "ffmpeg-static": "^5.1.0",
     "needle": "^3.2.0",
     "node-cache": "^5.1.2",
-    "node-fetch": "^3.3.1"
+    "node-fetch": "^3.3.1",
+    "path": "^0.12.7"
   },
   "devDependencies": {
     "@types/ejs": "^3.1.2",

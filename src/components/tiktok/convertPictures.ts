@@ -3,7 +3,7 @@ import axios from "axios";
 import {spawn} from "child_process";
 import ffmpeg from "ffmpeg-static";
 
-import config from "../config";
+import config from "../../../config";
 
 export default async function (pictures: string[], uuid: string): Promise<string> {
 	return new Promise<string>(async (resolve, reject): Promise<void> => {
@@ -36,7 +36,7 @@ export default async function (pictures: string[], uuid: string): Promise<string
 			}));
 		} else {
 			downloadImages = fs.readdirSync(`./storage/${uuid}`).map((file) => `./storage/${uuid}/${file}`)
-			return resolve(`${config.site}/api/video/?uuid=${uuid}`)
+			return resolve(`${config.sites.tiktok}/api/video/?uuid=${uuid}`)
 		}
 
 		console.log(downloadImages)
@@ -75,10 +75,10 @@ export default async function (pictures: string[], uuid: string): Promise<string
 		ffmpegProcess.on('close', (code: number) => {
 			if (code === 0) {
 				console.log('Video conversion completed successfully');
-				return resolve(`${config.site}/api/video/?uuid=${uuid}`)
+				return resolve(`${config.sites.tiktok}/api/video/?uuid=${uuid}`);
 			} else {
 				console.error(`FFmpeg process exited with code ${code}`);
-				return resolve(`${config.site}/api/video/?uuid=${uuid}`)
+				return resolve(`${config.sites.tiktok}/api/video/?uuid=${uuid}`);
 			}
 		});
 	})
