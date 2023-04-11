@@ -4,18 +4,8 @@ import axios from "axios";
 
 const cache = new NodeCache();
 
-function regexCheck(regex: RegExp[], value: string) {
-	return [...regex].map(regex => {
-		if (regex.test(value)) {
-			return regex.exec(value);
-		} else {
-			return undefined;
-		}
-	})?.filter(Boolean)?.at(0) || undefined;
-}
-
 export default async function tiktokFetchCache(
-	tiktokUrl: string
+	tiktokId: string
 ): Promise<{
 	music: {
 		author: any;
@@ -47,17 +37,16 @@ export default async function tiktokFetchCache(
 	}
 }> {
 	return new Promise(async (resolve, reject) => {
-		tiktokUrl = !tiktokUrl?.startsWith('/') ? `/${tiktokUrl}` : tiktokUrl;
-		const cached = cache.get(tiktokUrl);
+		const cached = cache.get(tiktokId);
 		if (cached) {
 			console.log("Cache hit");
 			resolve(await cached as any)
 		} else {
 			try {
 				console.log("Cache miss");
-				const data = tiktokFetch(tiktokUrl);
-					cache.set(tiktokUrl, data, 60 * 60);
-					resolve(await data);
+				const data = tiktokFetch(tiktokId);
+				cache.set(tiktokId, data, 60 * 60);
+				resolve(await data);
 			} catch (error) {
 				reject(error);
 			}
@@ -65,7 +54,7 @@ export default async function tiktokFetchCache(
 	});
 }
 
-async function tiktokFetch(tiktokUrl: string): Promise<{
+async function tiktokFetch(tiktokId: string): Promise<{
 	music: {
 		author: any;
 		id: any;
@@ -95,85 +84,8 @@ async function tiktokFetch(tiktokUrl: string): Promise<{
 		statistics: { shares: any; whatsappShares: any; comments: any; collects: any; views: any; likes: any }
 	}
 }> {
+	const tiktokResponse = await axios.get(`https://api16-normal-c-useast1a.tiktokv.com/aweme/v1/feed/?aweme_id=${tiktokId}`);
 
-	// accept two formats of url
-	// https://www.tiktok.com/@username/video/1234567891234567890
-	// /@username/video/1234567891234567890
-	// https://www.tiktok.com/t/ZTRcGDTRF/
-	// /t/ZTRcGDTRF/
-
-	// Implement system to check if its the /t/id url (if so make a request and follow the redirect to get the /@username/video/id url)
-
-	// Check if the url is valid
-	if (!tiktokUrl) throw {
-		message: 'Invalid URL - no URL provided',
-		error: true,
-		code: 400,
-	};
-
-	const tiktokRegex = /https:\/\/www\.tiktok\.com\/@(.+)\/video\/([0-9]+)/; // regex for https://www.tiktok.com/@username/video/1234567891234567890
-	const tiktokRegex2 = /\/@(.+)\/video\/([0-9]+)/; // regex for /@username/video/1234567891234567890
-	const tiktokRegex3 = /https:\/\/www\.tiktok\.com\/t\/([a-zA-Z0-9_]+)/; // regex for https://www.tiktok.com/t/ZTRcGDTRF/
-	const tiktokRegex4 = /\/t\/([a-zA-Z0-9_]+)/; // regex for /t/ZTRcGDTRF/
-
-	// Check if the url is valid
-	let type = '';
-	if (tiktokRegex3.test(tiktokUrl)) {
-		type = 'tiktokRegex3';
-	} else if (tiktokRegex4.test(tiktokUrl)) {
-		type = 'tiktokRegex4';
-	} else {
-		type = 'tiktokRegex';
-	}
-
-	console.log(tiktokUrl, type)
-
-	if (type === 'tiktokRegex3' || type === 'tiktokRegex4') {
-		const shortUrl = regexCheck([tiktokRegex3, tiktokRegex4], tiktokUrl);
-		if (!shortUrl) throw {
-			message: 'Invalid URL - failed to match regex',
-			error: true,
-			code: 400,
-		}
-
-		const shortUrlId = typeof shortUrl?.at(2) === 'string' ? shortUrl?.at(2) : shortUrl?.at(1) || false;
-		const getRealId: unknown | string = await axios.get(`https://www.tiktok.com/t/${shortUrlId}`)
-			.then(res => res.request.res.responseUrl);
-
-		if (!getRealId || typeof getRealId !== 'string') throw {
-			message: 'Invalid URL - failed to get real ID',
-			error: true,
-			code: 400,
-		}
-
-		tiktokUrl = getRealId;
-	}
-	let url;
-	let videoId;
-	try {
-		url = regexCheck([tiktokRegex, tiktokRegex2], tiktokUrl);
-		videoId = typeof url?.at(2) === 'string' ? url?.at(2) : url?.at(1) || false;
-	} catch (err) {
-		console.log(err);
-	}
-
-
-
-
-
-	// Images logic for the picture tiktoks (not videos)
-
-	// future head hurt
-	// x.aweme_list[0].image_post_info.images[0].display_image.url_list[1]
-	// the first 0 is the first video (aka one requested)
-	// the second 0 is the first image, neeed to loop through all of them
-	// the third 0 is the url (check for jpeg ignore webp)
-	// request url = https://api16-normal-c-useast1a.tiktokv.com/aweme/v1/feed/
-	// Query params: aweme_id: videoId
-
-	const tiktokResponse = await axios.get(`https://api16-normal-c-useast1a.tiktokv.com/aweme/v1/feed/?aweme_id=${videoId}`);
-
-	// Since tiktok added the images we need to check if the video is a picture reel or a video
 	let images: string[] = [];
 	let video: string = '';
 
@@ -261,6 +173,6 @@ async function tiktokFetch(tiktokUrl: string): Promise<{
 		}
 	}
 
-	console.log(`Just finished getting: ` + videoId)
+	console.log(`Just finished getting: ` + tiktokId)
 	return response;
 }

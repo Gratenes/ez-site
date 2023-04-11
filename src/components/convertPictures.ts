@@ -5,7 +5,7 @@ import ffmpeg from "ffmpeg-static";
 
 import config from "../../config";
 
-export default async function (pictures: string[], uuid: string): Promise<string> {
+export default async function (pictures: string[], uuid: string, site: typeof config.sites): Promise<string> {
 	return new Promise<string>(async (resolve, reject): Promise<void> => {
 		const pictureUrls = pictures
 		const outputVideo = `./storage/${uuid}/processed.mp4`;
@@ -36,7 +36,7 @@ export default async function (pictures: string[], uuid: string): Promise<string
 			}));
 		} else {
 			downloadImages = fs.readdirSync(`./storage/${uuid}`).map((file) => `./storage/${uuid}/${file}`)
-			return resolve(`${config.sites.tiktok}/api/video/?uuid=${uuid}`)
+			return resolve(`https://${site}/api/video/?uuid=${uuid}`)
 		}
 
 		console.log(downloadImages)
@@ -48,7 +48,7 @@ export default async function (pictures: string[], uuid: string): Promise<string
 			'-r', `${frameRate}`,
 			'-f', 'image2',
 			//...downloadImages.map((url, i) => ['-i', url]),
-			'-i', `./storage/${uuid}/%d.jpeg`,
+			'-i', `./src/storage/${uuid}/%d.jpeg`,
 			'-c:v', 'libx264',
 			'-pix_fmt', 'yuv420p',
 			'-vf', `scale=trunc(iw/2)*2:trunc(ih/2)*2`,
@@ -75,10 +75,10 @@ export default async function (pictures: string[], uuid: string): Promise<string
 		ffmpegProcess.on('close', (code: number) => {
 			if (code === 0) {
 				console.log('Video conversion completed successfully');
-				return resolve(`${config.sites.tiktok}/api/video/?uuid=${uuid}`);
+				return resolve(`https://${site}/api/video/?uuid=${uuid}`);
 			} else {
 				console.error(`FFmpeg process exited with code ${code}`);
-				return resolve(`${config.sites.tiktok}/api/video/?uuid=${uuid}`);
+				return resolve(`https://${site}/api/video/?uuid=${uuid}`);
 			}
 		});
 	})
