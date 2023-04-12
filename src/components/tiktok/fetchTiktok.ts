@@ -5,7 +5,7 @@ import axios from "axios";
 const cache = new NodeCache();
 
 export default async function tiktokFetchCache(
-	tiktokId: string
+	tiktokId: string, shouldFollowRedirects = false
 ): Promise<{
 	music: {
 		author: any;
@@ -44,7 +44,7 @@ export default async function tiktokFetchCache(
 		} else {
 			try {
 				console.log("Cache miss");
-				const data = tiktokFetch(tiktokId);
+				const data = tiktokFetch(tiktokId, shouldFollowRedirects);
 				cache.set(tiktokId, data, 60 * 60);
 				resolve(await data);
 			} catch (error) {
@@ -54,7 +54,7 @@ export default async function tiktokFetchCache(
 	});
 }
 
-async function tiktokFetch(tiktokId: string): Promise<{
+async function tiktokFetch(tiktokId: string, shouldFollowRedirects: boolean): Promise<{
 	music: {
 		author: any;
 		id: any;
@@ -84,6 +84,17 @@ async function tiktokFetch(tiktokId: string): Promise<{
 		statistics: { shares: any; whatsappShares: any; comments: any; collects: any; views: any; likes: any }
 	}
 }> {
+	if (shouldFollowRedirects) {
+
+		const tiktokResponse = await axios.get(`https://www.tiktok.com/t/${tiktokId}`);
+		const redirectUrl = tiktokResponse.request.res.responseUrl;
+
+		// get the numbers from the thingy till ?
+		tiktokId = redirectUrl.split('/').at(-1).split('?').at(0);
+	}
+
+	console.log(`cache ` + tiktokId)
+
 	const tiktokResponse = await axios.get(`https://api16-normal-c-useast1a.tiktokv.com/aweme/v1/feed/?aweme_id=${tiktokId}`);
 
 	let images: string[] = [];
