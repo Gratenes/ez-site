@@ -44,22 +44,28 @@ app.get('/api/video', (req, res) => {
 // /t/ZTRcGDTRF/
 
 app.get('/https\://www.tiktok.com/@:username/video/:id', async (req, res) => {
-	console.log(req.params.id)
+	const tiktok = await fetchTiktok(req.params.id)
+	tiktok.content.images ? tiktok.content.video = await convertToVideo(tiktok.content.images, req.params.id, req.headers.host as any) : null
+
+	res.render("tiktok/index.ejs", {tiktok: tiktok});
 })
 
 app.get('/https\://www.tiktok.com/t/:id', async (req, res) => {
-	console.log(req.params.id)
+	const tiktok = await fetchTiktok(req.params.id)
+	tiktok.content.images ? tiktok.content.video = await convertToVideo(tiktok.content.images, req.params.id, req.headers.host as any) : null
+
+	res.render("tiktok/index.ejs", {tiktok: tiktok});
 })
 
 app.get('/t/:id', async (req, res) => {
-	console.log(req.params.id)
+	const tiktok = await fetchTiktok(req.params.id)
+	tiktok.content.images ? tiktok.content.video = await convertToVideo(tiktok.content.images, req.params.id, req.headers.host as any) : null
+
+	res.render("tiktok/index.ejs", {tiktok: tiktok});
 })
 
 app.get('/@:username/video/:id', async (req, res) => {
-	console.log(req.params.id)
-
 	const tiktok = await fetchTiktok(req.params.id)
-	console.log('site', req.headers.host)
 	tiktok.content.images ? tiktok.content.video = await convertToVideo(tiktok.content.images, req.params.id, req.headers.host as any) : null
 
 	res.render("tiktok/index.ejs", {tiktok: tiktok});
