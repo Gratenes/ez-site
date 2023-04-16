@@ -3,96 +3,259 @@
 <head>
     <title> Tiktok Video Downloader </title>
     <meta property="og:site_name" content="Made by Chance#0002 and wearr#3596">
-    <meta name="twitter:card" content="player">
-    <meta name="twitter:title"
-          content="<%- formattedOutput.user.name || 'Unknown' %> <%- formattedOutput.user.username ? `(${formattedOutput.user.username})` : "" %>">
-    <meta name="twitter:player:width" content="720">
-    <meta name="twitter:player:height" content="480">
-    <meta name="twitter:player:stream" content="<%- formattedOutput.video %>">
-    <meta name="twitter:player:stream:content_type" content="video/mp4">
+
     <link rel="stylesheet" href="/css/index.css">
     <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.4.0/css/all.css">
     <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.4.0/css/sharp-regular.css">
     <script src="https://unpkg.com/artplayer/dist/artplayer.js"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <script src="https://cdn.jsdelivr.net/npm/animejs@3.0.1/lib/anime.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vidstack/styles/defaults.min.css"/>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/vidstack/dist/cdn/prod.js"></script>
+
+    <script>
+			// create tailwinds styles export
+    </script>
+
+    <style>
+        .swiper-slide-shadow {
+            background: none !important;
+        }
+
+        video {
+            max-height: 100vh;
+            height: 100vh !important;
+            width: min-content;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        :where(media-time-slider [part~=track-progress]) {
+            visibility: hidden !important;
+            display: none !important;
+            background-color: transparent !important;
+        }
+
+        :where(media-time-slider [part=thumb-container]) {
+            width: var(--media-slider-track-height) !important;
+            --tw-translate-y: 50% !important;
+        }
+
+        :where(media-time-slider [part=thumb]) {
+            visibility: visible !important;
+            opacity: 1 !important;
+            width: var(--media-slider-track-height) !important;
+            height: var(--media-slider-track-height) !important;
+        }
+
+        :root {
+            --media-slider-track-height: 1.5vh;
+        }
+
+
+    </style>
 </head>
 <body>
-<h1 class="title"> Tiktok Video Embeder </h1>
-<h2 class="subtitle"> Made by Chance#0002 and wearr#3596 </h2>
-<p class="description">This API is designed to be used in Discord EX.
-    https://tiktokez.com/@fribaru/video/7219762753165298990 </p>
+<div class="h-screen swiper-container">
+    <div class="h-screen max-w-full overflow-clip swiper-wrapper">
 
-<div class="artplayer-container">
-    <div class="artplayer-app"></div>
+    </div>
 </div>
-<div class="info-container">
-    <span class="creator-name">Created by: <%- formattedOutput.user.name %></span>
+
+<div id="svgDiv"
+     class="hidden absolute z-[100] pointer-events-none top-2 left-2 p-2 bg-black/25 w-fit backdrop-blur-sm h-fit items-center justify-center">
+    <svg class=""
+         style=""
+         id="svg"
+         width="395"
+         height="76"
+         viewBox="0 0 394.2 75.2"
+         xmlns="http://www.w3.org/2000/svg">
+        <g id="svgGroup" stroke-linecap="round" fill-rule="nonzero" font-size="9pt" stroke="#ffffff"
+           stroke-width="0.20mm" fill="none" style="stroke:#ffffff;stroke-width:0.20mm;fill:none">
+            <path opacity="0"
+                  d="M 31 74 L 21.5 74 L 21.5 12.4 L 0 12.4 L 0 4 L 52.5 4 L 52.5 12.4 L 31 12.4 L 31 74 Z"
+                  id="0"
+                  vector-effect="non-scaling-stroke"/>
+            <path opacity="0"
+                  d="M 70.5 74 L 61.5 74 L 61.5 22 L 70.5 22 L 70.5 74 Z M 61.637 11.288 A 7.466 7.466 0 0 1 61.55 11.2 A 6.643 6.643 0 0 1 60.192 9.219 A 5.992 5.992 0 0 1 59.7 6.8 A 7.987 7.987 0 0 1 59.929 4.832 A 5.588 5.588 0 0 1 61.4 2.2 A 5.661 5.661 0 0 1 64.344 0.658 A 8.264 8.264 0 0 1 66 0.5 A 6.059 6.059 0 0 1 70.392 2.293 A 7.395 7.395 0 0 1 70.45 2.35 A 6.06 6.06 0 0 1 72.3 6.719 A 7.26 7.26 0 0 1 72.3 6.8 Q 72.3 9.6 70.6 11.35 A 5.647 5.647 0 0 1 67.496 12.969 A 8.175 8.175 0 0 1 66 13.1 A 5.973 5.973 0 0 1 61.637 11.288 Z"
+                  id="1" vector-effect="non-scaling-stroke"/>
+            <path opacity="0"
+                  d="M 128.6 69 L 122.4 75 L 95.5 47.3 L 95.5 74 L 86.5 74 L 86.5 0 L 95.5 0 L 95.5 42.3 L 119 21 L 124.2 26.7 L 104.1 44.5 L 128.6 69 Z"
+                  id="2" vector-effect="non-scaling-stroke"/>
+            <path opacity="0"
+                  d="M 161.6 74 L 152.1 74 L 152.1 12.4 L 130.6 12.4 L 130.6 4 L 183.1 4 L 183.1 12.4 L 161.6 12.4 L 161.6 74 Z"
+                  id="3" vector-effect="non-scaling-stroke"/>
+            <path opacity="0"
+                  d="M 200.7 71.75 Q 194.8 68.3 191.45 62.15 A 27.451 27.451 0 0 1 188.365 52.354 A 34.82 34.82 0 0 1 188.1 48 A 35.006 35.006 0 0 1 188.751 41.09 A 26.023 26.023 0 0 1 191.5 33.5 Q 194.9 27.4 200.8 24.1 A 26.169 26.169 0 0 1 212.42 20.839 A 31.325 31.325 0 0 1 214 20.8 A 27.738 27.738 0 0 1 222.509 22.073 A 24.848 24.848 0 0 1 227.15 24.1 Q 233 27.4 236.45 33.45 A 25.795 25.795 0 0 1 239.415 41.891 A 34.542 34.542 0 0 1 239.9 47.8 A 34.184 34.184 0 0 1 239.153 55.109 A 26.255 26.255 0 0 1 236.5 62.25 Q 233.1 68.4 227.25 71.8 Q 221.4 75.2 214 75.2 Q 209.353 75.2 205.298 73.84 A 24.559 24.559 0 0 1 200.7 71.75 Z M 214 67.2 Q 221.9 67.2 226.3 61.85 A 18.802 18.802 0 0 0 230.119 53.76 A 27.105 27.105 0 0 0 230.7 48 Q 230.7 42.8 228.5 38.45 A 19.198 19.198 0 0 0 224.328 32.881 A 18.17 18.17 0 0 0 222.55 31.45 Q 218.8 28.8 214 28.8 A 19.249 19.249 0 0 0 208.774 29.472 A 14.037 14.037 0 0 0 201.7 34 A 17.878 17.878 0 0 0 198.026 41.374 Q 197.3 44.306 197.3 47.8 Q 197.3 53 199.5 57.45 A 19.437 19.437 0 0 0 203.03 62.49 A 17.627 17.627 0 0 0 205.45 64.55 Q 209.2 67.2 214 67.2 Z"
+                  id="4" vector-effect="non-scaling-stroke"/>
+            <path opacity="0"
+                  d="M 294 69 L 287.8 75 L 260.9 47.3 L 260.9 74 L 251.9 74 L 251.9 0 L 260.9 0 L 260.9 42.3 L 284.4 21 L 289.6 26.7 L 269.5 44.5 L 294 69 Z"
+                  id="5" vector-effect="non-scaling-stroke"/>
+            <path opacity="0"
+                  d="M 346 74 L 304 74 L 304 4 L 346 4 L 346 12.2 L 313.5 12.2 L 313.5 33.5 L 341.5 33.5 L 341.5 41.5 L 313.5 41.5 L 313.5 65.8 L 346 65.8 L 346 74 Z"
+                  id="6" vector-effect="non-scaling-stroke"/>
+            <path opacity="0"
+                  d="M 394.2 74 L 354 74 L 354 66.9 L 382.7 29.8 L 354.6 29.8 L 354.6 22 L 393.7 22 L 393.7 28.9 L 365.1 66 L 394.2 66 L 394.2 74 Z"
+                  id="7" vector-effect="non-scaling-stroke"/>
+        </g>
+    </svg>
 </div>
-<% if (formattedOutput.sound.name !== undefined) { %>
-    <span class="sound-name">Sound: <%- formattedOutput.sound.name %></span>
-<% } %>
-<div class="stats-container">
-    <span class="views"><i
-                class="fa-sharp fa-regular fa-eye"></i>&nbsp;<%- parseInt(formattedOutput.stats.views).toLocaleString("en-US") %></span>
-    <span class="likes"><i
-                class="fa-regular fa-heart"></i>&nbsp;<%- parseInt(formattedOutput.stats.likes).toLocaleString("en-US") %></span>
-    <span class="shares"><i
-                class="fa-sharp fa-light fa-share"></i>&nbsp;<%- parseInt(formattedOutput.stats.shares).toLocaleString("en-US") %></span>
-    <span class="comments"><i
-                class="fa-regular fa-comment"></i>&nbsp;<%- parseInt(formattedOutput.stats.comments).toLocaleString("en-US") %></span>
-</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
 <script>
-	function create_UUID() {
-		var dt = new Date().getTime();
-		var uuid = 'xxxxxxxxx'.replace(/[xy]/g, function (c) {
-			var r = (dt + Math.random() * 16) % 16 | 0;
-			dt = Math.floor(dt / 16);
-			return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
-		});
-		return uuid;
-	}
+	const ArrayThots = [<%- tiktoks.map(r => JSON.stringify(r)); %>];
 
-	var art = new Artplayer({
-		container: '.artplayer-app',
-		url: '<%- formattedOutput.video %>',
-		cover: "<%- formattedOutput.cover.static %>",
-		fullscreen: false,
-		fullscreenWeb: true,
-		airplay: true,
-		theme: '#cb71ff',
-		controls: [
-			{
-				position: 'right',
-				html: '<i class="fa-regular fa-download"></i>',
-				index: 1,
-				tooltip: 'Download',
-				style: {
-					fontSize: '20px',
-					marginTop: '-1px',
-					color: 'white',
-					marginRight: '5px'
-				},
-				click: function () {
-					fetch('<%- formattedOutput.video %>')
-						.then(resp => resp.blob())
-						.then(blob => {
-							const url = window.URL.createObjectURL(blob);
-							const a = document.createElement('a');
-							a.style.display = 'none';
-							a.href = url;
-							// the filename you want
-							a.download = `TikTok_EZ.${create_UUID()}.mp4`;
-							document.body.appendChild(a);
-							a.click();
-							window.URL.revokeObjectURL(url);
-							console.log('File '); // or you know, something with better UX...
-						})
-						.catch((err) => console.log(err));
+	const swiper = new Swiper(".swiper-container", {
+		effect: "cards",
+		grabCursor: true,
+		virtual: {
+			slides: ArrayThots,
+			renderSlide: function (slide, index) {
+				//backdrop-filter backdrop-blur-lg
+				//poster=${slide.content.covers.static}
+				//class="h-full w-full"
+				console.log(slide)
+				return `<div class="swiper-slide lg:rounded-3xl backdrop-blur-lg bg-black/50 backdrop-filter ">
+                    <media-player
+                            class="h-full max-h-screen object-center w-fit relative"
+                            loop
+                            poster=${slide.content.covers.static}
+                            id="${slide.id}"
+                    >
+
+                          <media-play-button id="${slide.id}" aria-describedby="media-play-tooltip"class="absolute top-0 left-0 z-10 w-10">
+                          </media-play-button id="${slide.id}">
+
+                            <media-time-slider id="${slide.id}" class="absolute left-0 bottom-0 z-10 m-0 h-[var(--media-slider-track-height)] overflow-clip">
+
+                            </media-time-slider>
+
+                          <media-outlet class="w-fit" id="${slide.id}">
+                            <source id="${slide.id}" src="${slide.content.video}" class="backdrop-blur" type="video/mp4" />
+                          </media-outlet>
+                    </media-player>
+                <div/>`;
+			},
+		},
+	});
+
+	// I AM NOT PROUD OF THIS CODE (DONT THINK I AM) BUT IT WOKRS
+	let oldElm;
+	let kill;
+	const observeActiveSlide = () => {
+		const swiperWrapper = document.querySelector('.swiper-wrapper');
+		const observer = new MutationObserver(mutations => {
+			mutations.forEach(mutation => {
+				if (kill) return;
+				if (mutation.attributeName === 'class') {
+					const slide = mutation.target;
+					const isActiveSlide = slide.classList.contains('swiper-slide-active') && slide.querySelector('video');
+					if (isActiveSlide && oldElm !== slide.querySelector('video')) {
+						console.log('changing video')
+						oldElm?.pause();
+
+						oldElm = slide.querySelector('video')
+						oldElm.play();
+
+						kill = true;
+					}
 				}
-			}
-		]
+			});
+			kill = false
+		});
+
+		observer.observe(swiperWrapper, {attributes: true, childList: true, subtree: true, attributeFilter: ['class']});
+	};
+	observeActiveSlide();
+
+	swiper.on("slideChangeTransitionEnd", async function (e) {
+		const activeIndex = e.activeIndex;
+		const lastIndex = ArrayThots.length - 1;
+		const bufferZone = 3;
+
+		/*oldElm?.pause();
+
+        let realIndex2 = e.activeIndex - e.previousIndex;
+        const activeSlide = swiper.slides[realIndex2];
+        console.log(swiper.slides, e.activeIndex, activeSlide);
+        oldElm = activeSlide.querySelector('video');
+        oldElm.play();*/
+
+		// change the url to the current video
+		// don't use pushState because it will break the back button
+		window.history.replaceState(
+			null,
+			null,
+			`/@${ArrayThots[ activeIndex ].user.username}/video/${ArrayThots[ activeIndex ].content.id}`
+		);
+
+		// If the user is at the end of the array, fetch more videos
+		if (activeIndex >= lastIndex - bufferZone) {
+			const randoms = await fetch("/api/video/tiktok/random");
+			const newTiktoks = await randoms.json();
+
+			ArrayThots.push(...newTiktoks);
+			swiper.virtual.appendSlide(newTiktoks);
+
+			// Remove slides that are too far away from the current one
+			const maxSlides = 20;
+			const slideOffset = Math.min(activeIndex, maxSlides);
+			swiper.virtual.removeSlide(0, slideOffset);
+
+			swiper.update(true);
+		}
 	});
 
 </script>
+
+
+<script>
+	const svgPath = document.querySelectorAll('#svg #svgGroup path');
+	const svg = document.querySelector('#svgDiv');
+
+	const svgPathAnime = anime({
+		targets: svgPath,
+		strokeDashoffset: [anime.setDashoffset, 0],
+		easing: 'easeOutQuart',
+		duration: 750,
+		delay: function (el, i) {
+			return i * 150;
+		},
+		opacity: 1,
+		direction: 'alternate',
+		loop: false
+	});
+
+	const svgDiv = anime({
+		targets: svg,
+		top: 0,
+		left: 0,
+		width: '100vw',
+		height: '100vh',
+		duration: 750,
+		backgroundColor: ['rgba(0, 0, 0, 0.25)', '#000'],
+		borderRadius: ['10px', 0],
+		direction: 'reverse',
+		easing: 'easeInOutQuart',
+		changeBegin: function (anim) {
+			anim.pause();
+		}
+	});
+
+	console.log(svgDiv);
+
+	/*svgPathAnime.finished.then(() => {
+        console.log('finished')
+        console.log(svgDiv)
+        svgDiv.play();
+    });*/
+</script>
+
+
 </body>
 </html>
