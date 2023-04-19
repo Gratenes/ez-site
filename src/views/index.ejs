@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8"/>
+    <link rel=icon href=/svg/Ezfill>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Ez Embed</title>
+    <link rel="stylesheet" href="/css/index.css"/>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="text-white h-screen">
+
+
+<div class="flex flex-col w-full h-full items-center justify-center">
+    <div class="w-fit z-10 backdrop-blur-sm bg-black bg-opacity-10 p-4 rounded-lg">
+        <div class="space-y-1">
+            <label for="searchBar" class="text-3xl md:text-7xl w-full flex items-center justify-center">
+                <div class="w-full flex items-center justify-center h-[94px]" id="nameSvg">
+                </div>
+            </label>
+            <div class="relative">
+                <input class="block outline-none border-0 text-black border-gray-200 rounded md:pr-12 pl-3 py-2 leading-6 w-full focus:border-0 focus:ring focus:ring-blue-500 focus:ring-opacity-0"
+                       type="text" id="searchBar" name="append_alt_normal" placeholder="https://example.com"
+                >
+
+                <div id='searchButton'
+                     class="absolute inset-y-0 right-0 w-10 my-px mr-px flex items-center justify-center rounded-r text-gray-500 bg-white border-l border-gray-200">
+                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none">
+                        <path fill-rule="evenodd" clip-rule="evenodd"
+                              d="M11.5 7.00002C11.5 7.59096 11.3836 8.17613 11.1574 8.72209C10.9313 9.26806 10.5998 9.76413 10.182 10.182C9.7641 10.5998 9.26803 10.9313 8.72206 11.1575C8.1761 11.3836 7.59094 11.5 6.99999 11.5C6.40904 11.5 5.82388 11.3836 5.27791 11.1575C4.73195 10.9313 4.23587 10.5998 3.81801 10.182C3.40014 9.76413 3.06868 9.26806 2.84253 8.72209C2.61638 8.17613 2.49999 7.59096 2.49999 7.00002C2.49999 5.80654 2.97409 4.66195 3.81801 3.81804C4.66192 2.97412 5.80651 2.50002 6.99999 2.50002C8.19346 2.50002 9.33805 2.97412 10.182 3.81804C11.0259 4.66195 11.5 5.80654 11.5 7.00002ZM10.68 11.74C9.47437 12.676 7.95736 13.1173 6.43779 12.9741C4.91822 12.831 3.51033 12.1141 2.50074 10.9694C1.49114 9.82473 0.955743 8.33831 1.00352 6.81277C1.05131 5.28722 1.67869 3.83722 2.75794 2.75797C3.8372 1.67872 5.28719 1.05134 6.81274 1.00355C8.33829 0.955771 9.8247 1.49117 10.9694 2.50077C12.1141 3.51036 12.831 4.91825 12.9741 6.43782C13.1173 7.95738 12.676 9.47439 11.74 10.68L14.78 13.72C14.8537 13.7887 14.9128 13.8715 14.9538 13.9635C14.9948 14.0555 15.0168 14.1548 15.0186 14.2555C15.0204 14.3562 15.0018 14.4562 14.9641 14.5496C14.9264 14.643 14.8702 14.7278 14.799 14.799C14.7278 14.8703 14.643 14.9264 14.5496 14.9641C14.4562 15.0018 14.3562 15.0204 14.2555 15.0186C14.1548 15.0168 14.0554 14.9948 13.9635 14.9538C13.8715 14.9128 13.7887 14.8537 13.72 14.78L10.68 11.74Z"
+                              fill="#24292F"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+        <div class="rounded-2xl">
+            <div class="container xl:max-w-7xl mx-auto px-4 py-4">
+                <div class="grid grid-cols-2 lg:grid-cols-6 lg:gap-5 gap-2 text-center text-white">
+                    <div class="flex items-center justify-center">
+                        <a
+                                href="https://github.com/Gratenes/better-embed"
+                                class="py-2 inline-flex items-center space-x-2 text-lg transition grayscale hover:grayscale-0 active:opacity-50 font-semibold text-white hover:text-teal-400 hover:scale-105 hover:cursor-pointer">
+                            <svg class="bi bi-github inline-block w-5 h-5" xmlns="http://www.w3.org/2000/svg"
+                                 fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                                <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+                            </svg>
+                            <span class="select-none">Github</span>
+                        </a>
+                    </div>
+
+                    <!--
+                    <div class="flex items-center justify-center">
+                        <a
+                                class="py-2 inline-flex items-center space-x-2 text-lg transition grayscale hover:grayscale-0 active:opacity-50 font-semibold text-white hover:text-violet-400 hover:scale-105 hover:cursor-pointer">
+                            <svg class="bi bi-tiktok inline-block w-5 h-5" xmlns="http://www.w3.org/2000/svg"
+                                 fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                                <path d="M9 0h1.98c.144.715.54 1.617 1.235 2.512C12.895 3.389 13.797 4 15 4v2c-1.753 0-3.07-.814-4-1.829V11a5 5 0 1 1-5-5v2a3 3 0 1 0 3 3V0Z"/>
+                            </svg>
+                            <span class="select-none">Tiktok</span>
+                        </a>
+                    </div>
+                    -->
+
+                    <div class="flex items-center justify-center">
+                        <a
+                                href="https://discord.gg/D72MC6D2dZ"
+                                class="py-2 inline-flex items-center space-x-2 text-lg transition grayscale hover:grayscale-0 active:opacity-50 font-semibold text-white hover:text-blue-500 hover:scale-105 hover:cursor-pointer">
+                            <svg class="bi bi-discord inline-block w-5 h-5" xmlns="http://www.w3.org/2000/svg"
+                                 fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                                <path d="M13.545 2.907a13.227 13.227 0 0 0-3.257-1.011.05.05 0 0 0-.052.025c-.141.25-.297.577-.406.833a12.19 12.19 0 0 0-3.658 0 8.258 8.258 0 0 0-.412-.833.051.051 0 0 0-.052-.025c-1.125.194-2.22.534-3.257 1.011a.041.041 0 0 0-.021.018C.356 6.024-.213 9.047.066 12.032c.001.014.01.028.021.037a13.276 13.276 0 0 0 3.995 2.02.05.05 0 0 0 .056-.019c.308-.42.582-.863.818-1.329a.05.05 0 0 0-.01-.059.051.051 0 0 0-.018-.011 8.875 8.875 0 0 1-1.248-.595.05.05 0 0 1-.02-.066.051.051 0 0 1 .015-.019c.084-.063.168-.129.248-.195a.05.05 0 0 1 .051-.007c2.619 1.196 5.454 1.196 8.041 0a.052.052 0 0 1 .053.007c.08.066.164.132.248.195a.051.051 0 0 1-.004.085 8.254 8.254 0 0 1-1.249.594.05.05 0 0 0-.03.03.052.052 0 0 0 .003.041c.24.465.515.909.817 1.329a.05.05 0 0 0 .056.019 13.235 13.235 0 0 0 4.001-2.02.049.049 0 0 0 .021-.037c.334-3.451-.559-6.449-2.366-9.106a.034.034 0 0 0-.02-.019Zm-8.198 7.307c-.789 0-1.438-.724-1.438-1.612 0-.889.637-1.613 1.438-1.613.807 0 1.45.73 1.438 1.613 0 .888-.637 1.612-1.438 1.612Zm5.316 0c-.788 0-1.438-.724-1.438-1.612 0-.889.637-1.613 1.438-1.613.807 0 1.451.73 1.438 1.613 0 .888-.631 1.612-1.438 1.612Z"/>
+                            </svg>
+
+                            <span class="select-none">Discord</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="relative hidden md:flex md:h-1/2 w-full flex-col md:flex-row items-center justify-evenly">
+        <card class="w-fit aspect-square h-[24rem] rounded-3xl overflow-clip bg-white rotate-3">
+            <div class="inline-flex items-center p-2 w-full">
+                <img class="h-10 w-10 rounded-full mr-2" src="/pic/lacyIcon"/> <span class="text-2xl text-gray-600">steve.lacy</span>
+            </div>
+            <img class="rounded-b-3xl w-full h-full" src="/pic/lacyCover"/>
+        </card>
+
+
+        <card class="w-fit aspect-square h-[24rem]  rounded-3xl overflow-clip bg-white h-[24rem] -rotate-3">
+            <div class="inline-flex items-center p-2 w-full">
+                <img class="h-10 w-10 rounded-full mr-2" src="/pic/jeffIcon"/> <span class="text-2xl text-gray-600">jeffreyjkieffer</span>
+            </div>
+            <img class="rounded-b-3xl w-full h-full" src="/pic/jeffCover"/>
+        </card>
+
+
+        <card class="w-fit aspect-square h-[24rem]  rounded-3xl overflow-clip bg-white h-[24rem] scale-110 rotate-3">
+            <div class="inline-flex items-center p-2 w-full">
+                <img class="h-10 w-10 rounded-full mr-2" src="/pic/familyIcon"/> <span
+                        class="text-2xl text-gray-600">crap.content</span>
+            </div>
+            <img class="rounded-b-3xl w-full h-full" src="/pic/familyMan"/>
+        </card>
+    </div>
+</div>
+
+<div id="infoBigContainer" class="h-[200vh] relative">
+    <div id="svgLinesContainer" class="sticky absolute top-0 left-0 w-full flex justify-center">
+
+    </div>
+</div>
+
+<!-- svgLines animation -->
+<script>
+	// file name randomLines
+
+	const svgLinesContainer = document.getElementById('svgLinesContainer');
+	const infoBigContainer = document.getElementById('infoBigContainer');
+
+	const svg = fetch('/svg/randomLines')
+		.then(response => response.text())
+		.then(async data => {
+			svgLinesContainer.innerHTML = data;
+
+			const svgLinePaths = document.querySelectorAll('#svgLinesContainer path');
+			const svgLine = document.querySelector('#svgLinesContainer svg');
+			svgLine.style.overflow = 'visible';
+
+			const timeline = anime.timeline({
+				autoplay: false,
+				loop: false
+			});
+
+			timeline.add({
+				targets: svgLinePaths,
+				strokeDashoffset: [anime.setDashoffset, 0],
+				easing: 'easeInOutSine',
+				duration: 750,
+				delay: function (el, i) {
+					return i * 15;
+				},
+				opacity: 1
+			});
+
+
+			function getScrollPercent(element, offset = 0) {
+				const rect = element.getBoundingClientRect();
+				const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+				const scrollDistance = rect.top + scrollTop + rect.height - window.innerHeight;
+
+				if (scrollDistance <= 0) {
+					return 0;
+				}
+
+				const scrollPercent = (scrollTop / scrollDistance) * 100;
+
+				return Math.round(scrollPercent * 100) / 100;
+			}
+
+
+			function animateOnScroll() {
+
+				const scrollPercent = getScrollPercent(infoBigContainer);
+
+				console.log(scrollPercent);
+
+				timeline.seek((scrollPercent / 100) * timeline.duration);
+			}
+
+			window.addEventListener('scroll', animateOnScroll);
+
+		});
+
+</script>
+
+<!-- search bar -->
+<script>
+	const search = document.getElementById('searchBar');
+	const searchButton = document.getElementById('searchButton');
+
+	searchButton.addEventListener('click', () => {
+		const queryInput = document.getElementById('searchBar');
+		const query = queryInput.value;
+		location.pathname = query;
+	});
+
+	search.addEventListener('keyup', (event) => {
+		if (event.key === 'Enter') {
+			const queryInput = document.getElementById('searchBar');
+			const query = queryInput.value;
+			console.log(query);
+			location.pathname = query;
+		}
+	});
+</script>
+
+<!-- code to make cards have a 3d effect -->
+<script>
+	const cards = document.querySelectorAll('card');
+
+	cards.forEach((card, index) => {
+		const height = card.clientHeight;
+		const width = card.clientWidth;
+
+		/*
+          * Add a listener for mousemove event
+          * Which will trigger function 'handleMove'
+          * On mousemove
+          */
+		card.addEventListener('mousemove', handleMove);
+
+		/* Define function a */
+		function handleMove(e) {
+			const xVal = e.layerX;
+			const yVal = e.layerY - (index * 100);
+
+			/*
+              * Calculate rotation valuee along the Y-axis
+              * Here the multiplier 20 is to
+              * Control the rotation
+              * You can change the value and see the results
+              */
+			const yRotation = 10 * ((xVal - width / 2) / width);
+
+			/* Calculate the rotation along the X-axis */
+			const xRotation = -10 * ((yVal - height / 2) / height);
+
+			const string = `perspective(500px) scale(1) rotateX(${xRotation}deg) rotateY(${yRotation}deg) translate(0px, ${(index * 100) - 100}px)`;
+			card.style.transform = string;
+		}
+
+		card.style.transform = `perspective(500px) scale(1) rotateX(${0}deg) rotateY(${0}deg) translate(0px, ${(index * 100) - 100}px)`;
+		card.style.transition = `transform 0.075s ease`;
+
+	});
+
+</script>
+
+<!-- Code to load svg tittle in swaggly -->
+<script src="https://cdn.jsdelivr.net/npm/animejs@3.0.1/lib/anime.min.js"></script>
+<script>
+
+	nameSvg = document.getElementById('nameSvg');
+
+	(async () => {
+		try {
+			let response = await fetch('/svg/<%- info.host; %>');
+			if (!response.ok) {
+				response = await fetch('/svg/tiktokez.com');
+			}
+
+			nameSvg.innerHTML = await response.text();
+			const svg = document.querySelector('#nameSvg svg');
+			svg.setAttribute('width', undefined);
+
+			const svgPath = svg.querySelectorAll('path');
+			anime({
+				targets: svgPath,
+				strokeDashoffset: [anime.setDashoffset, 0],
+				easing: 'easeOutQuart',
+				duration: 750,
+				delay: function (el, i) {
+					return i * 150;
+				},
+				opacity: 1,
+				direction: 'alternate',
+				loop: false
+			});
+
+		} catch (error) {
+			console.log('error', error);
+		}
+
+	})();
+
+</script>
+
+</body>
+</html>
