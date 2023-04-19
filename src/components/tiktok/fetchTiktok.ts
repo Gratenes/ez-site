@@ -57,11 +57,9 @@ export default async function tiktokFetchCache(
 	return new Promise(async (resolve, reject) => {
 		const cached = cache.get(tiktokId);
 		if (cached && (settings.cached ?? true)) {
-			console.log("Cache hit");
 			resolve(await cached as any)
 		} else {
 			try {
-				console.log("Cache miss");
 				let data: Promise<tiktokType<{ returnArray: true | false }>>;
 				if (settings.returnArray) {
 					data = tiktokFetch(tiktokId, {
@@ -95,15 +93,12 @@ async function tiktokFetch(tiktokId: string, settings: settingsInterface): Promi
 		tiktokId = redirectUrl.split('/').at(-1).split('?').at(0);
 	}
 
-	console.log(`cache ` + tiktokId)
 
 	let device_id = 7218277047537649192;
 	if (settings.ipAddress) {
 		const seed: number = settings.ipAddress.split('.').reduce((prev, curr) => parseInt(String(prev), 10) + parseInt(curr, 10), 0);
 		device_id = seed;
 		const hash: string = createHash('sha256').update(device_id.toString()).digest('hex');
-		console.log(`Device ID: ${device_id}`);
-		console.log(`Hashed Device ID: ${hash}`);
 	}
 
 	const tiktokResponse = await axios.get(`https://api16-normal-c-useast1a.tiktokv.com/aweme/v1/feed/?aweme_id=${tiktokId}&device_id=${device_id}`);
@@ -275,6 +270,5 @@ async function tiktokFetch(tiktokId: string, settings: settingsInterface): Promi
 		}
 	}
 
-	console.log(`Just finished getting: ` + tiktokId)
 	return responce;
 }

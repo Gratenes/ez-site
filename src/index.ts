@@ -5,6 +5,7 @@ import helmet from "helmet";
 
 import convertToVideo from './components/convertPictures'
 import fetchTiktok from "./components/tiktok/fetchTiktok";
+import fetchInstaVideo from "./components/insta/fetchInstaVideo";
 
 import settings from '../config'
 import axios from "axios";
@@ -21,103 +22,149 @@ const app = express()
 app.set('views', path.join(__dirname, 'views'))
 
 app.get("/", async (req, res) => {
-    let ipAddress: string = req.header('X-Forwarded-For') || req.socket.remoteAddress!;
+	res.render('index.ejs', {
+		info: {
+			host: req.headers.host,
+		}
+	})
+})
 
-    console.log(ipAddress)
-    const tiktoks = await fetchTiktok('random', {
-        cached: false,
-        followRedirects: false,
-        returnArray: true,
-        ipAddress: ipAddress
-    })
-    return res.render("landing.ejs", {tiktoks: tiktoks});
+app.get("/scroll", async (req, res) => {
+	let ipAddress: string = req.header('X-Forwarded-For') || req.socket.remoteAddress!;
+
+	console.log(ipAddress)
+	const tiktoks = await fetchTiktok('random', {
+		cached: false,
+		followRedirects: false,
+		returnArray: true,
+		ipAddress: ipAddress
+	})
+	return res.render("landing.ejs", {tiktoks: tiktoks});
+})
+
+app.get('/pic/:id', async (req, res) => {
+	return res.sendFile(__dirname + `/assets/pictures/${req.params.id}.png`)
 })
 
 app.get("/svg/:name", (req, res) => {
-    return res.sendFile(__dirname + `/assets/svg/${req.params.name}.svg`)
+	return res.sendFile(__dirname + `/assets/svg/${req.params.name}.svg`)
 })
 
 app.get("/css/index.css", (req, res) => {
-    return res.sendFile(__dirname + "/styles/index.css")
+	return res.sendFile(__dirname + "/styles/index.css")
 })
 
 app.get('/api/video', (req, res) => {
-    const uuid = req.query.uuid as string
-    if (!uuid) return res.status(400).send('No uuid provided')
+	const uuid = req.query.uuid as string
+	if (!uuid) return res.status(400).send('No uuid provided')
 
-    const video = `./storage/${uuid}/processed.mp4`
-    if (fs.existsSync(video)) {
-        res.status(200).sendFile(video, {root: __dirname})
-    }
+	const video = `./storage/${uuid}/processed.mp4`
+	if (fs.existsSync(video)) {
+		res.status(200).sendFile(video, {root: __dirname})
+	}
 })
 
+
+// These are the routes for instagram
+app.get('/p/:id', async (req, res) => {
+	const videos = await fetchInstaVideo(req.params.id)
+	if (videos === 'This post is private or does not exist') return res.status(404).render('404.ejs', {
+		cause: 'This post is private or does not exist'
+	})
+
+	res.render('insta/index.ejs', {insta: videos})
+})
+
+app.get('/reels/:id', async (req, res) => {
+	const videos = await fetchInstaVideo(req.params.id)
+	if (videos === 'This post is private or does not exist') return res.status(404).render('404.ejs', {
+		cause: 'This post is private or does not exist'
+	})
+
+	res.render('insta/index.ejs', {insta: videos})
+})
+
+app.get('/reel/:id', async (req, res) => {
+	const videos = await fetchInstaVideo(req.params.id)
+	if (videos === 'This post is private or does not exist') return res.status(404).render('404.ejs', {
+		cause: 'This post is private or does not exist'
+	})
+
+	res.render('insta/index.ejs', {insta: videos})
+})
+
+
+// These are the routes for tiktoks
 app.get('/api/video/tiktok/:id.mp4', async (req, res) => {
-    const tiktok = await fetchTiktok(req.params.id)
-    tiktok.content.images ? tiktok.content.video = await convertToVideo(tiktok.content.images, tiktok.content.id, req.headers.host as any) : null
+	const tiktok = await fetchTiktok(req.params.id)
+	tiktok.content.images ? tiktok.content.video = await convertToVideo(tiktok.content.images, tiktok.content.id, req.headers.host as any) : null
 
-    const video = tiktok.content.video
-    if (!video) return res.status(404).send('Video not found')
+	const video = tiktok.content.video
+	if (!video) return res.status(404).send('Video not found')
 
-    axios(video, {
-        responseType: 'stream'
-    }).then(response => {
-        //res.setHeader('Content-Type', 'video/mp4')
-        response.data.pipe(res);
-    }).catch(err => {
-        res.sendStatus(500)
-        console.log(err)
-    })
+	axios(video, {
+		responseType: 'stream'
+	}).then(response => {
+		//res.setHeader('Content-Type', 'video/mp4')
+		response.data.pipe(res);
+	}).catch(err => {
+		res.sendStatus(500)
+		console.log(err)
+	})
 })
 
 app.get('/api/video/tiktok/random', async (req, res) => {
-    let ipAddress: string = req.header('X-Forwarded-For') || req.socket.remoteAddress!;
+	let ipAddress: string = req.header('X-Forwarded-For') || req.socket.remoteAddress!;
 
-    const tiktok = await fetchTiktok('random', {
-        cached: false,
-        followRedirects: false,
-        returnArray: true,
-        ipAddress: ipAddress
-    })
+	const tiktok = await fetchTiktok('random', {
+		cached: false,
+		followRedirects: false,
+		returnArray: true,
+		ipAddress: ipAddress
+	})
 
-    // @ts-ignore
-    if (!tiktok[0].content.video) return res.status(404).send('Video not found')
-    res.setHeader('Content-Type', 'application/json').send(tiktok)
+	// @ts-ignore
+	if (!tiktok[0].content.video) return res.status(404).send('Video not found')
+	res.setHeader('Content-Type', 'application/json').send(tiktok)
 })
 
 app.get('/https\://www.tiktok.com/@:username/video/:id', async (req, res) => {
-    const tiktok = await fetchTiktok(req.params.id)
-    tiktok.content.images ? tiktok.content.video = await convertToVideo(tiktok.content.images, tiktok.content.id, req.headers.host as any) : null
+	const tiktok = await fetchTiktok(req.params.id)
+	tiktok.content.images ? tiktok.content.video = await convertToVideo(tiktok.content.images, tiktok.content.id, req.headers.host as any) : null
 
-    res.render("tiktok/index.ejs", {tiktok: tiktok});
+	res.render("tiktok/index.ejs", {tiktok: tiktok});
 })
 
 app.get('/https\://www.tiktok.com/t/:id', async (req, res) => {
-    const tiktok = await fetchTiktok(req.params.id, {
-        followRedirects: true
-    })
-    tiktok.content.images ? tiktok.content.video = await convertToVideo(tiktok.content.images, tiktok.content.id, req.headers.host as any) : null
+	const tiktok = await fetchTiktok(req.params.id, {
+		followRedirects: true
+	})
+	tiktok.content.images ? tiktok.content.video = await convertToVideo(tiktok.content.images, tiktok.content.id, req.headers.host as any) : null
 
-    res.render("tiktok/index.ejs", {tiktok: tiktok});
+	res.render("tiktok/index.ejs", {tiktok: tiktok});
 })
 
 app.get('/t/:id', async (req, res) => {
-    const tiktok = await fetchTiktok(req.params.id, {
-        followRedirects: true
-    })
-    tiktok.content.images ? tiktok.content.video = await convertToVideo(tiktok.content.images, tiktok.content.id, req.headers.host as any) : null
+	const tiktok = await fetchTiktok(req.params.id, {
+		followRedirects: true
+	})
+	tiktok.content.images ? tiktok.content.video = await convertToVideo(tiktok.content.images, tiktok.content.id, req.headers.host as any) : null
 
-    res.render("tiktok/index.ejs", {tiktok: tiktok});
+	res.render("tiktok/index.ejs", {tiktok: tiktok});
 })
 
 app.get('/@:username/video/:id', async (req, res) => {
-    const tiktok = await fetchTiktok(req.params.id)
-    tiktok.content.images ? tiktok.content.video = await convertToVideo(tiktok.content.images, tiktok.content.id, req.headers.host as any) : null
+	const tiktok = await fetchTiktok(req.params.id)
+	tiktok.content.images ? tiktok.content.video = await convertToVideo(tiktok.content.images, tiktok.content.id, req.headers.host as any) : null
 
-    res.render("tiktok/index.ejs", {tiktok: tiktok});
+	res.render("tiktok/index.ejs", {tiktok: tiktok});
+})
+
+// 404 error page
+app.use((req, res) => {
+	res.status(404).render('404.ejs')
 })
 
 app.listen(settings.port || 3000, () => {
-    console.log(`Server is listening on port ${settings.port || 3000}`)
+	console.log(`Server is listening on port ${settings.port || 3000}`)
 })
-
-//fetchTiktok('@foolinyou_/video/7219547897161862446')

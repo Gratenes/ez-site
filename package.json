@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "ts-node src/index",
+    "test": "ts-node src/test.ts",
+    "start": "ts-node src/index.ts",
     "build": "tsc"
   },
   "author": "",
@@ -22,7 +22,8 @@
     "needle": "^3.2.0",
     "node-cache": "^5.1.2",
     "node-fetch": "^3.3.1",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "user-agents": "^1.0.1351"
   },
   "devDependencies": {
     "@types/ejs": "^3.1.2",

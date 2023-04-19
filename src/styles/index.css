@@ -46,3 +46,33 @@ body {
 .art-bottom {
     background-image: none !important;
 }
+
+card {
+    box-shadow: 0 0 20px #ffffff;
+    border-radius: 10px;
+    border: #ffffff 4px solid;
+}
+
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 0;
+    z-index: 99;
+}
+
+
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0);
+    z-index: 99;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #707179;
+    border-radius: 4px;
+    z-index: 99;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #707179;
+    border-radius: 4px;
+}
