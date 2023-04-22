@@ -106,8 +106,20 @@
     </div>
 </div>
 
+<div class="absolute top-0 left-0 mx-auto w-full -z-10 h-screen overflow-hidden flex justify-center items-end">
+    <div class="extendSvgToTop h-fit">
+
+    </div>
+</div>
+
+<div class="absolute top-0 left-0 mx-auto w-full -z-10 h-screen overflow-hidden flex justify-center items-end">
+    <div class="extendSvgToTop2 h-fit">
+
+    </div>
+</div>
+
 <div id="infoBigContainer" class="h-[200vh] relative">
-    <div id="svgLinesContainer" class="sticky absolute top-0 left-0 w-full flex justify-center">
+    <div id="svgLinesContainer" class="sticky absolute top-0 left-0 w-full flex justify-center overflow-hidden">
 
     </div>
 </div>
@@ -115,11 +127,29 @@
 <!-- svgLines animation -->
 <script>
 	// file name randomLines
+	const extendSvgToTop = document.querySelector('.extendSvgToTop');
+	const extendSvgToTop2 = document.querySelector('.extendSvgToTop2');
 
 	const svgLinesContainer = document.getElementById('svgLinesContainer');
 	const infoBigContainer = document.getElementById('infoBigContainer');
 
-	const svg = fetch('/svg/randomLines')
+	let selectedSvgLine = 'large';
+	const svgLines = {
+		'large': '/svg/randomLines',
+		'small': '/svg/moibleRandomLines'
+	};
+
+	if (window.innerWidth < 768) {
+		selectedSvgLine = 'small';
+	}
+
+	fetch('/svg/frame3')
+		.then(response => response.text())
+		.then(async data => {
+			extendSvgToTop2.innerHTML = data;
+		});
+
+	const svg = fetch(svgLines[ selectedSvgLine ])
 		.then(response => response.text())
 		.then(async data => {
 			svgLinesContainer.innerHTML = data;
