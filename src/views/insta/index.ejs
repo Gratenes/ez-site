@@ -3,7 +3,7 @@
 <head>
     <title> Instagram Video Downloader </title>
     <meta name="theme-color" content="#2b2d31">
-    <meta property="og:site_name" content="Made by Chance#0002 and wearr#3596">
+    <meta property="og:site_name" content="Made by Chance#0002">
     <meta property="og:title" content="<%- insta.videos[ 0 ].description; %>" data-rh="true">
     <meta property="og:description" content="<%- insta.videos[ 0 ].description; %>" data-rh="true">
     <meta name="twitter:card" content="player">
@@ -24,7 +24,7 @@
 <body>
 
 <h1 class="title"> Instagram Video Embeder </h1>
-<h2 class="subtitle"> Made by Chance#0002 and wearr#3596 </h2>
+<h2 class="subtitle"> Made by Chance#0002</h2>
 <p class="description">This API is designed to be used in Discord EX.
     https://instagramez.com/p/<%= insta.id; %> </p>
 
@@ -63,10 +63,10 @@
 				index: 1,
 				tooltip: 'Download',
 				style: {
-					fontSize: "20px",
-					marginTop: "-1px",
-					color: "white",
-					marginRight: "5px"
+					fontSize: '20px',
+					marginTop: '-1px',
+					color: 'white',
+					marginRight: '5px'
 				},
 				click: function () {
 					fetch('<%- insta.videos[ 0 ].url; %>')
@@ -81,12 +81,12 @@
 							document.body.appendChild(a);
 							a.click();
 							window.URL.revokeObjectURL(url);
-							console.log("File ") // or you know, something with better UX...
+							console.log('File '); // or you know, something with better UX...
 						})
 						.catch((err) => console.log(err));
-				},
-			},
-		],
+				}
+			}
+		]
 	});
 
 </script>

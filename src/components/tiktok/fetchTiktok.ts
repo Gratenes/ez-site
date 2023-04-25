@@ -39,6 +39,7 @@ interface settingsInterface {
 	cached?: boolean;
 	followRedirects?: boolean;
 	returnArray?: true | false;
+	originalLink?: string;
 	ipAddress?: string;
 }
 
@@ -48,18 +49,19 @@ const cache = new NodeCache();
 
 
 export default async function tiktokFetchCache(
-	tiktokId: string, settings: settingsInterface = {
+	tiktokId: string,
+	settings: settingsInterface = {
 		cached: true,
 		returnArray: false,
-		followRedirects: false
+		followRedirects: false,
 	}
 ): Promise<tiktokType<{ returnArray: true | false }>> {
 	return new Promise(async (resolve, reject) => {
-		const cached = cache.get(tiktokId);
-		if (cached && (settings.cached ?? true)) {
-			resolve(await cached as any)
-		} else {
-			try {
+		try {
+			const cached = cache.get(tiktokId);
+			if (cached && (settings.cached ?? true)) {
+				resolve(await cached as any)
+			} else {
 				let data: Promise<tiktokType<{ returnArray: true | false }>>;
 				if (settings.returnArray) {
 					data = tiktokFetch(tiktokId, {
@@ -74,9 +76,9 @@ export default async function tiktokFetchCache(
 				}
 				cache.set(tiktokId, data, 60 * 60);
 				resolve(await data);
-			} catch (error) {
-				reject(error);
 			}
+		} catch (error) {
+			reject(error);
 		}
 	});
 }
@@ -84,15 +86,20 @@ export default async function tiktokFetchCache(
 async function tiktokFetch(tiktokId: string, settings: settingsInterface): Promise<tiktokType<{
 	returnArray: true | false
 }>> {
+	console.log('we made it this far frfr')
 	if (settings.followRedirects) {
 
-		const tiktokResponse = await axios.get(`https://www.tiktok.com/t/${tiktokId}`);
-		const redirectUrl = tiktokResponse.request.res.responseUrl;
+		const tiktokResponse = await axios.get(settings?.originalLink ? settings?.originalLink : `https://www.tiktok.com/t/${tiktokId}`, {
+			validateStatus: () => true,
+		});
+		const redirectUrl = tiktokResponse?.request?.res?.responseUrl;
 
 		// get the numbers from the thingy till ?
-		tiktokId = redirectUrl.split('/').at(-1).split('?').at(0);
+		tiktokId = redirectUrl?.split('/')?.at(-1)?.split('?')?.at(0);
 	}
 
+	console.log('we made it this far frfr')
+	if (!tiktokId) return Promise.reject('No Tiktok ID provided');
 
 	let device_id = 7218277047537649192;
 	if (settings.ipAddress) {

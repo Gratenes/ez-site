@@ -3,7 +3,7 @@
 <head>
     <title> Tiktok Video Downloader </title>
     <meta name="theme-color" content="#2b2d31">
-    <meta property="og:site_name" content="Made by Chance#0002 and wearr#3596">
+    <meta property="og:site_name" content="Made by Chance#0002">
     <meta name="twitter:card" content="player">
     <meta name="twitter:title"
           content="<%- tiktok.user.displayName || 'Unknown'; %> <%- tiktok.user.username ? `(${tiktok.user.username})` : ''; %>">
@@ -20,7 +20,7 @@
 <body>
 
 <h1 class="title"> Tiktok Video Embeder </h1>
-<h2 class="subtitle"> Made by Chance#0002 and wearr#3596 </h2>
+<h2 class="subtitle"> Made by Chance#0002</h2>
 <p class="description">This API is designed to be used in Discord EX.
     https://tiktokez.com/<%= tiktok.user.username; %>/video/<%= tiktok.content.id; %> </p>
 
@@ -70,10 +70,10 @@
 				index: 1,
 				tooltip: 'Download',
 				style: {
-					fontSize: "20px",
-					marginTop: "-1px",
-					color: "white",
-					marginRight: "5px"
+					fontSize: '20px',
+					marginTop: '-1px',
+					color: 'white',
+					marginRight: '5px'
 				},
 				click: function () {
 					fetch('<%- tiktok.content.video; %>')
@@ -88,12 +88,12 @@
 							document.body.appendChild(a);
 							a.click();
 							window.URL.revokeObjectURL(url);
-							console.log("File ") // or you know, something with better UX...
+							console.log('File '); // or you know, something with better UX...
 						})
 						.catch((err) => console.log(err));
-				},
-			},
-		],
+				}
+			}
+		]
 	});
 
 </script>

@@ -1,4 +1,4 @@
-import express, {response} from 'express'
+import express, {Request, Response, NextFunction} from 'express'
 import * as fs from 'fs';
 import path from "path";
 import helmet from "helmet";
@@ -18,6 +18,18 @@ const app = express()
 		mediaSrc: ["'self'", "v16m-default.akamaized.net"]
 	}
 }))*/
+
+const Subdomain = (subdomainName: string): ((req: Request, res: Response, next: NextFunction) => void) => {
+	return (req: Request, res: Response, next: NextFunction): void => {
+		console.log('subdomain', req.subdomains[0])
+		if (req.subdomains[0] === subdomainName) {
+			next(); // Proceed to next middleware function
+		} else {
+			res.status(403).send('Forbidden');
+		}
+	};
+};
+
 
 app.set('views', path.join(__dirname, 'views'))
 
@@ -50,6 +62,10 @@ app.get("/svg/:name", (req, res) => {
 	return res.sendFile(__dirname + `/assets/svg/${req.params.name}.svg`)
 })
 
+app.get("/svg/:folder/:name", (req, res) => {
+	return res.sendFile(__dirname + `/assets/svg/${req.params.folder}/${req.params.name}.svg`)
+})
+
 app.get("/css/index.css", (req, res) => {
 	return res.sendFile(__dirname + "/styles/index.css")
 })
@@ -66,32 +82,18 @@ app.get('/api/video', (req, res) => {
 
 
 // These are the routes for instagram
-app.get('/p/:id', async (req, res) => {
+const getInstagramVideo = async (req: Request, res: Response) => {
 	const videos = await fetchInstaVideo(req.params.id)
 	if (videos === 'This post is private or does not exist') return res.status(404).render('404.ejs', {
 		cause: 'This post is private or does not exist'
 	})
 
 	res.render('insta/index.ejs', {insta: videos})
-})
+}
 
-app.get('/reels/:id', async (req, res) => {
-	const videos = await fetchInstaVideo(req.params.id)
-	if (videos === 'This post is private or does not exist') return res.status(404).render('404.ejs', {
-		cause: 'This post is private or does not exist'
-	})
-
-	res.render('insta/index.ejs', {insta: videos})
-})
-
-app.get('/reel/:id', async (req, res) => {
-	const videos = await fetchInstaVideo(req.params.id)
-	if (videos === 'This post is private or does not exist') return res.status(404).render('404.ejs', {
-		cause: 'This post is private or does not exist'
-	})
-
-	res.render('insta/index.ejs', {insta: videos})
-})
+app.get('/p/:id', getInstagramVideo)
+app.get('/reels/:id', getInstagramVideo)
+app.get('/reel/:id', getInstagramVideo)
 
 
 // These are the routes for tiktoks
@@ -128,37 +130,37 @@ app.get('/api/video/tiktok/random', async (req, res) => {
 	res.setHeader('Content-Type', 'application/json').send(tiktok)
 })
 
-app.get('/https\://www.tiktok.com/@:username/video/:id', async (req, res) => {
-	const tiktok = await fetchTiktok(req.params.id)
-	tiktok.content.images ? tiktok.content.video = await convertToVideo(tiktok.content.images, tiktok.content.id, req.headers.host as any) : null
+const getTiktokVideo = (settings?: any) => {
+	return async (req: Request, res: Response) => {
+		try {
+			const tiktok = await fetchTiktok(req.params.id, {
+				...settings,
+				originalLink: typeof settings?.originalLink === 'function'
+					? settings?.originalLink(req)
+					: settings?.originalLink
+			});
+			console.log('pased Fetch tiktok')
+			if (tiktok.content.images) {
+				tiktok.content.video = await convertToVideo(tiktok.content.images, tiktok.content.id, req.headers.host as any);
+			}
+			res.render("tiktok/index.ejs", {tiktok: tiktok});
+		} catch (e) {
+			res.render('404.ejs', {
+				cause: 'Video not found'
+			})
+		}
+	}
+}
 
-	res.render("tiktok/index.ejs", {tiktok: tiktok});
-})
 
-app.get('/https\://www.tiktok.com/t/:id', async (req, res) => {
-	const tiktok = await fetchTiktok(req.params.id, {
-		followRedirects: true
-	})
-	tiktok.content.images ? tiktok.content.video = await convertToVideo(tiktok.content.images, tiktok.content.id, req.headers.host as any) : null
-
-	res.render("tiktok/index.ejs", {tiktok: tiktok});
-})
-
-app.get('/t/:id', async (req, res) => {
-	const tiktok = await fetchTiktok(req.params.id, {
-		followRedirects: true
-	})
-	tiktok.content.images ? tiktok.content.video = await convertToVideo(tiktok.content.images, tiktok.content.id, req.headers.host as any) : null
-
-	res.render("tiktok/index.ejs", {tiktok: tiktok});
-})
-
-app.get('/@:username/video/:id', async (req, res) => {
-	const tiktok = await fetchTiktok(req.params.id)
-	tiktok.content.images ? tiktok.content.video = await convertToVideo(tiktok.content.images, tiktok.content.id, req.headers.host as any) : null
-
-	res.render("tiktok/index.ejs", {tiktok: tiktok});
-})
+app.get('/https\://www.tiktok.com/@:username/video/:id', getTiktokVideo({}));
+app.get('/https\://www.tiktok.com/t/:id', getTiktokVideo({followRedirects: true}));
+app.get('/t/:id', getTiktokVideo({followRedirects: true}));
+app.get('/@:username/video/:id', getTiktokVideo());
+app.get('/:id', Subdomain('vt'), getTiktokVideo({
+	followRedirects: true,
+	originalLink: (req: Request) => `https://vt.tiktok.com/${req.params.id}`
+}));
 
 // 404 error page
 app.use((req, res) => {

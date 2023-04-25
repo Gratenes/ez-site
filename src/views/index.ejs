@@ -107,101 +107,146 @@
 </div>
 
 <div class="absolute top-0 left-0 mx-auto w-full -z-10 h-screen overflow-hidden flex justify-center items-end">
-    <div class="extendSvgToTop h-fit">
+    <div class="landingSvg h-fit">
 
     </div>
 </div>
 
-<div class="absolute top-0 left-0 mx-auto w-full -z-10 h-screen overflow-hidden flex justify-center items-end">
-    <div class="extendSvgToTop2 h-fit">
+<div id="infoBigContainer" class="relative w-screen h-fit overflow-x-clip">
+    <div id="svgLinesContainer" class="absolute h-fit top-0 left-0 w-full flex justify-center">
 
+    </div>
+    <div class="w-full flex flex-col justify-center">
+        <div id="tiles"
+             class="flex m-3.5 justify-between items-center border border-white rounded-md p-4 backdrop-blur-sm mt-[25vh] opacity-0 md:mr-[10vw] flex-col md:flex-row">
+            <div class="w-1/3">
+                <img src="https://via.placeholder.com/500x400" alt="Promotional Image">
+            </div>
+            <div class="max-w-screen-lg w-2/3 ml-4">
+                <h2 class="text-2xl font-bold text-white mb-2">Easy To view</h2>
+                <p class="text-gray-400">Are you tired of clicking on video links and having to navigate away from your
+                    conversation?
+                    Well, worry no more! With our video player embedded into discord,
+                    you can view videos right on your own server. No need to open a new tab or window,
+                    just sit back and enjoy the content without any distractions.</p>
+                <button class="rounded-lg px-4 py-2 mt-4 hover:bg-gray-200 transition duration-300 ease-in-out text-white hover:text-black">
+                    Learn More
+                </button>
+            </div>
+        </div>
+        <div id="tiles"
+             class="flex m-3.5 justify-between items-center border border-white rounded-md p-4 backdrop-blur-sm mt-[25vh] opacity-0 md:ml-[10vw] flex-col md:flex-row">
+            <div class="w-1/3">
+                <img src="https://via.placeholder.com/500x400" alt="Promotional Image">
+            </div>
+            <div class="max-w-screen-lg w-2/3 ml-4">
+                <h2 class="text-2xl font-bold text-white mb-2">Promotion Title</h2>
+                <p class="text-gray-400">Promotion Text goes here. Lorem ipsum dolor sit amet, consectetur adipiscing
+                    elit. Mauris quis felis nec nisi porta rhoncus sed vitae quam. Vestibulum nec finibus neque, eu
+                    tempus sem. Donec vel elit massa. Integer maximus in magna eu semper. Duis sodales eget ante a
+                    finibus. Ut placerat urna eu nunc interdum dictum. </p>
+                <button class="rounded-lg px-4 py-2 mt-4 hover:bg-gray-200 transition duration-300 ease-in-out text-white hover:text-black">
+                    Learn More
+                </button>
+            </div>
+        </div>
     </div>
 </div>
 
-<div id="infoBigContainer" class="h-[200vh] relative">
-    <div id="svgLinesContainer" class="sticky absolute top-0 left-0 w-full flex justify-center overflow-hidden">
+<!-- tiles fade in animation -->
+<script>
+	const element = document.querySelectorAll('#tiles');
 
-    </div>
-</div>
+	element.forEach(function (card) {
+		const observer = new IntersectionObserver(function (entries) {
+			if (entries[ 0 ].isIntersecting) {
+				anime({
+					targets: card,
+					translateY: [44, 0],
+					scale: [.75, 1],
+					opacity: [0, 1],
+					duration: 500,
+					easing: 'easeInOutQuad'
+				});
+
+				observer.disconnect();
+			}
+		}, {threshold: 0.5});
+
+		observer.observe(card);
+	});
+</script>
 
 <!-- svgLines animation -->
 <script>
 	// file name randomLines
 	const extendSvgToTop = document.querySelector('.extendSvgToTop');
-	const extendSvgToTop2 = document.querySelector('.extendSvgToTop2');
+	const landingSvg = document.querySelector('.landingSvg');
 
 	const svgLinesContainer = document.getElementById('svgLinesContainer');
 	const infoBigContainer = document.getElementById('infoBigContainer');
 
-	let selectedSvgLine = 'large';
-	const svgLines = {
-		'large': '/svg/randomLines',
-		'small': '/svg/moibleRandomLines'
-	};
+	function getScrollPercent(element, offset = 0) {
+		const rect = element.getBoundingClientRect();
+		let scrollTop = window.scrollY || document.documentElement.scrollTop;
+		const scrollDistance = (rect.top + scrollTop + rect.height - window.innerHeight);
 
-	if (window.innerWidth < 768) {
-		selectedSvgLine = 'small';
+		scrollTop -= offset;
+
+		if (scrollDistance <= 0) {
+			return 0;
+		}
+
+		const scrollPercent = (scrollTop / scrollDistance) * 100;
+
+		return Math.round(scrollPercent * 100) / 100;
 	}
 
-	fetch('/svg/frame3')
-		.then(response => response.text())
-		.then(async data => {
-			extendSvgToTop2.innerHTML = data;
+
+	// Logic for animation!!!
+
+	const animateSvgLines = (paths, duration, delay) => {
+		const timeline = anime.timeline({
+			autoplay: false,
+			loop: false
 		});
 
-	const svg = fetch(svgLines[ selectedSvgLine ])
-		.then(response => response.text())
-		.then(async data => {
-			svgLinesContainer.innerHTML = data;
-
-			const svgLinePaths = document.querySelectorAll('#svgLinesContainer path');
-			const svgLine = document.querySelector('#svgLinesContainer svg');
-			svgLine.style.overflow = 'visible';
-
-			const timeline = anime.timeline({
-				autoplay: false,
-				loop: false
-			});
-
-			timeline.add({
-				targets: svgLinePaths,
-				strokeDashoffset: [anime.setDashoffset, 0],
-				easing: 'easeInOutSine',
-				duration: 750,
-				delay: function (el, i) {
-					return i * 15;
-				},
-				opacity: 1
-			});
-
-
-			function getScrollPercent(element, offset = 0) {
-				const rect = element.getBoundingClientRect();
-				const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-				const scrollDistance = rect.top + scrollTop + rect.height - window.innerHeight;
-
-				if (scrollDistance <= 0) {
-					return 0;
-				}
-
-				const scrollPercent = (scrollTop / scrollDistance) * 100;
-
-				return Math.round(scrollPercent * 100) / 100;
-			}
-
-
-			function animateOnScroll() {
-
-				const scrollPercent = getScrollPercent(infoBigContainer);
-
-				console.log(scrollPercent);
-
-				timeline.seek((scrollPercent / 100) * timeline.duration);
-			}
-
-			window.addEventListener('scroll', animateOnScroll);
-
+		timeline.add({
+			targets: [paths],
+			strokeDashoffset: [anime.setDashoffset, 0],
+			easing: 'linear',
+			duration: duration,
+			delay: (el, i) => (i * 5) + 100,
+			opacity: 1
 		});
+
+		return timeline;
+	};
+
+	const animateOnScroll = (timeline, container, speed, pxToSubtract) => {
+		const scrollPercent = getScrollPercent(container, pxToSubtract);
+		timeline.seek((scrollPercent / (speed ?? 100)) * timeline.duration);
+	};
+
+	const animateSvgGroups = async () => {
+		const svgData = await fetch(`/svg/randomLines`).then(response => response.text());
+		svgLinesContainer.innerHTML = svgData;
+
+		const svgLinePaths1 = document.querySelectorAll('#svgLinesContainer path');
+		const svgLine = document.querySelector('#svgLinesContainer svg');
+		svgLine.style.overflow = 'visible';
+
+		const timeline1 = animateSvgLines(svgLinePaths1, 750, 15);
+
+		let pxToSubtract = null;
+
+		window.addEventListener('scroll', () => {
+			animateOnScroll(timeline1, svgLinesContainer);
+		});
+	};
+
+	animateSvgGroups();
+
 
 </script>
 
