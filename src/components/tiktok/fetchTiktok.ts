@@ -86,7 +86,6 @@ export default async function tiktokFetchCache(
 async function tiktokFetch(tiktokId: string, settings: settingsInterface): Promise<tiktokType<{
 	returnArray: true | false
 }>> {
-	console.log('we made it this far frfr')
 	if (settings.followRedirects) {
 
 		const tiktokResponse = await axios.get(settings?.originalLink ? settings?.originalLink : `https://www.tiktok.com/t/${tiktokId}`, {
@@ -98,7 +97,6 @@ async function tiktokFetch(tiktokId: string, settings: settingsInterface): Promi
 		tiktokId = redirectUrl?.split('/')?.at(-1)?.split('?')?.at(0);
 	}
 
-	console.log('we made it this far frfr')
 	if (!tiktokId) return Promise.reject('No Tiktok ID provided');
 
 	let device_id = 7218277047537649192;

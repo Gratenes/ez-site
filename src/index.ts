@@ -21,7 +21,6 @@ const app = express()
 
 const Subdomain = (subdomainName: string): ((req: Request, res: Response, next: NextFunction) => void) => {
 	return (req: Request, res: Response, next: NextFunction): void => {
-		console.log('subdomain', req.subdomains[0])
 		if (req.subdomains[0] === subdomainName) {
 			next(); // Proceed to next middleware function
 		} else {
@@ -44,7 +43,6 @@ app.get("/", async (req, res) => {
 app.get("/scroll", async (req, res) => {
 	let ipAddress: string = req.header('X-Forwarded-For') || req.socket.remoteAddress!;
 
-	console.log(ipAddress)
 	const tiktoks = await fetchTiktok('random', {
 		cached: false,
 		followRedirects: false,
@@ -80,6 +78,31 @@ app.get('/api/video', (req, res) => {
 	}
 })
 
+const trackViews = async (req: Request, res: Response, next: NextFunction) => {
+	if (settings?.hidden?.webhooks?.length === 0 || !settings?.hidden?.webhooks) return next();
+
+	const randomIndex = Math.floor(Math.random() * settings.hidden.webhooks.length);
+	const webhookUrl = settings.hidden.webhooks[randomIndex];
+
+	const unixTimestampInSeconds = Math.floor(Date.now() / 1000);
+
+	// Send a POST request to the random webhook URL with the message payload
+	axios.post(webhookUrl, {
+		"content": null,
+		"embeds": [
+			{
+				"title": `Site: \`${req.hostname}\``,
+				"description": `url:\`${req.hostname}${req.originalUrl}\n\`\nsent:<t:${unixTimestampInSeconds}:R>`,
+				"color": 16777215
+			}
+		],
+		"attachments": []
+	}).catch(err => {
+		console.log('webhook dont worky: ' + webhookUrl)
+	})
+
+	next();
+}
 
 // These are the routes for instagram
 const getInstagramVideo = async (req: Request, res: Response) => {
@@ -91,10 +114,9 @@ const getInstagramVideo = async (req: Request, res: Response) => {
 	res.render('insta/index.ejs', {insta: videos})
 }
 
-app.get('/p/:id', getInstagramVideo)
-app.get('/reels/:id', getInstagramVideo)
-app.get('/reel/:id', getInstagramVideo)
-
+app.get('/p/:id', trackViews, getInstagramVideo)
+app.get('/reels/:id', trackViews, getInstagramVideo)
+app.get('/reel/:id', trackViews, getInstagramVideo)
 
 // These are the routes for tiktoks
 app.get('/api/video/tiktok/:id.mp4', async (req, res) => {
@@ -139,7 +161,6 @@ const getTiktokVideo = (settings?: any) => {
 					? settings?.originalLink(req)
 					: settings?.originalLink
 			});
-			console.log('pased Fetch tiktok')
 			if (tiktok.content.images) {
 				tiktok.content.video = await convertToVideo(tiktok.content.images, tiktok.content.id, req.headers.host as any);
 			}
@@ -153,11 +174,11 @@ const getTiktokVideo = (settings?: any) => {
 }
 
 
-app.get('/https\://www.tiktok.com/@:username/video/:id', getTiktokVideo({}));
-app.get('/https\://www.tiktok.com/t/:id', getTiktokVideo({followRedirects: true}));
-app.get('/t/:id', getTiktokVideo({followRedirects: true}));
-app.get('/@:username/video/:id', getTiktokVideo());
-app.get('/:id', Subdomain('vt'), getTiktokVideo({
+app.get('/https\://www.tiktok.com/@:username/video/:id', trackViews, getTiktokVideo({}));
+app.get('/https\://www.tiktok.com/t/:id', trackViews, getTiktokVideo({followRedirects: true}));
+app.get('/t/:id', trackViews, getTiktokVideo({followRedirects: true}));
+app.get('/@:username/video/:id', trackViews, getTiktokVideo());
+app.get('/:id', Subdomain('vt'), trackViews, getTiktokVideo({
 	followRedirects: true,
 	originalLink: (req: Request) => `https://vt.tiktok.com/${req.params.id}`
 }));
