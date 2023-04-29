@@ -1,7 +1,7 @@
 import {Application, Request, Response} from "express";
 import fetchInstaVideo from "@/utils/insta/fetchInstaVideo";
 import trackViews from "@/utils/trackViews";
-import checkDomainName from "@/utils/checkDomain.ts";
+import checkDomainName from "@/utils/checkDomain";
 
 import settings from "../../config";
 

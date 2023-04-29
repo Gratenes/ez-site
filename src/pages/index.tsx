@@ -3,7 +3,7 @@ import axios from 'axios'
 import Head from "next/head";
 import anime from 'animejs/lib/anime';
 import Link from "next/link";
-import {Discord, Github} from "@/components/socials.tsx";
+import {Discord, Github} from "@/components/socials";
 
 const infoHeight = `200vh`;
 

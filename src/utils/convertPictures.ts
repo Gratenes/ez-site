@@ -3,7 +3,7 @@ import axios from "axios";
 import {spawn} from "child_process";
 import ffmpeg from "ffmpeg-static";
 
-import config from "../../config.ts";
+import config from "../../config";
 
 export default async function (pictures: string[], uuid: string, site: typeof config.sites): Promise<string> {
 	return new Promise<string>(async (resolve, reject): Promise<void> => {

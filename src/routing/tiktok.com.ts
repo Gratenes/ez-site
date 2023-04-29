@@ -1,10 +1,10 @@
 import fetchTiktok from "@/utils/tiktok/fetchTiktok";
-import convertToVideo from "@/utils/convertPictures.ts";
+import convertToVideo from "@/utils/convertPictures";
 import axios from "axios";
 import {Application, Request, Response} from "express";
 import trackViews from "@/utils/trackViews";
 import subDomain from "@/utils/subDomain";
-import checkDomainName from "@/utils/checkDomain.ts";
+import checkDomainName from "@/utils/checkDomain";
 
 import settings from "../../config";
 import * as console from "console";

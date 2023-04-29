@@ -6,6 +6,9 @@ import fs from "fs";
 import settings from './config'
 
 const dev = process.env.NODE_ENV !== 'production';
+
+console.log(`Starting server in ${dev ? 'development' : 'production'} mode`);
+
 const server = next({ dev });
 const handle = server.getRequestHandler();
 

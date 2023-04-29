@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "set NODE_ENV=dev && ts-node --require tsconfig-paths/register server.ts",
-    "build": "next build && tsc",
-    "start": "set NODE_ENV=production && node server.js",
+    "dev": "cross-env NODE_ENV=dev && ts-node --require tsconfig-paths/register server.ts",
+    "build": "next build",
+    "start": "cross-env NODE_ENV=production ts-node --require tsconfig-paths/register server.ts",
     "lint": "next lint"
   },
   "dependencies": {
@@ -31,6 +31,8 @@
   "devDependencies": {
     "@types/animejs": "^3.1.7",
     "@types/express": "^4.17.17",
+    "cross-env": "^7.0.3",
+    "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0"
   }
 }

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import BackButton from "@/components/backButton.tsx";
+import BackButton from "@/components/backButton";
 
 function ContactButton() {
 	const handleContactClick = () => {
