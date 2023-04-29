@@ -30,6 +30,7 @@ interface tiktokFetch {
 		id: any;
 		images: string[];
 		video: string;
+		videoLength: number;
 		covers: { static: any; dynamic: any };
 		statistics: { shares: any; whatsappShares: any; comments: any; collects: any; views: any; likes: any }
 	}
@@ -145,6 +146,7 @@ async function tiktokFetch(tiktokId: string, settings: settingsInterface): Promi
 					images: firstElement.image_post_info?.images?.map((image: any) => {
 						return image.display_image.url_list?.filter((url: string) => url.includes('jpeg'))?.at(0);
 					}),
+					videoLength: firstElement?.video?.play_addr?.data_size,
 					video: firstElement?.video?.play_addr.url_list?.filter((url: string) => url.includes('mp4'))?.at(0),
 					covers: {
 						static: firstElement?.video?.cover.url_list?.filter((url: string) => url.includes('jpeg'))?.at(0) || undefined,
@@ -227,6 +229,7 @@ async function tiktokFetch(tiktokId: string, settings: settingsInterface): Promi
 				images: firstElement.image_post_info?.images?.map((image: any) => {
 					return image.display_image.url_list?.filter((url: string) => url.includes('jpeg'))?.at(0);
 				}),
+				videoLength: firstElement?.video?.play_addr?.data_size,
 				video: firstElement?.video?.play_addr.url_list?.filter((url: string) => url.includes('mp4'))?.at(0),
 				covers: {
 					static: firstElement?.video?.cover.url_list?.filter((url: string) => url.includes('jpeg'))?.at(0) || undefined,

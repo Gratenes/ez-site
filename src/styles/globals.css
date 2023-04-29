@@ -17,11 +17,80 @@
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  background-color: rgb(8, 8, 8);
+  color: white;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  text-align: center;
+  margin: 0;
+  height: 100%;
+}
+
+.artplayer-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.artplayer-app {
+  height: 70vh;
+  width: 100vh;
+}
+
+.art-state {
+  display: none !important;
+}
+
+.creator-name {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.stats-container {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+}
+
+.stats-container > span {
+  background-color: #1a1a1a;
+  padding-inline: 15px;
+  border-radius: 10px;
+  padding-bottom: 5px;
+  padding-top: 5px;
+}
+
+.art-bottom {
+  background-image: none !important;
+}
+
+card {
+  box-shadow: 0 0 20px #ffffff;
+  border-radius: 10px;
+  border: #ffffff 4px solid;
+}
+
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 0;
+  z-index: 99;
+}
+
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0);
+  z-index: 99;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #707179;
+  border-radius: 4px;
+  z-index: 99;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #707179;
+  border-radius: 4px;
 }
