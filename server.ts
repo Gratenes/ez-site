@@ -2,6 +2,7 @@ import express from 'express';
 import next from 'next';
 import path from "path";
 import fs from "fs";
+import * as mongoose from "mongoose";
 
 import settings from './config'
 
@@ -15,6 +16,8 @@ const handle = server.getRequestHandler();
 import fetchTiktok from "@/utils/tiktok/fetchTiktok";
 import instagramCom from "@/routing/instagram.com";
 import tiktokCom from "@/routing/tiktok.com";
+
+import Entry from "./mongo/schema";
 
 server.prepare().then(() => {
 	const app = express();
@@ -65,4 +68,11 @@ server.prepare().then(() => {
 	app.listen(settings.port || 3000, () => {
 		console.log(`Server is listening on port ${settings.port || 3000}`)
 	})
+});
+
+// Connect to the MongoDB database
+mongoose.connect(`mongodb+srv://gratenes:${settings.hidden.mongodbPass}@cluster0.xj0ao.mongodb.net/ez?retryWrites=true&w=majority`).then(() => {
+	console.log('Connected to MongoDB');
+}).catch((err) => {
+	console.error('Error connecting to MongoDB:', err);
 });

@@ -138,8 +138,11 @@ export default function Home() {
 	const titleRef = useRef<HTMLDivElement>(null);
 	useEffect(() => {
 		try {
+			const url = new URL(window.location.href);
+			const hostname = url.hostname.split('.').slice(-2).join('.'); // extracts example.com
+
 			const svg1 = axios.get(
-				`/svg/${window.location.hostname}.svg`
+				`/svg/${hostname}.svg`
 			)
 
 			Promise.all([svg1]).then((res) => {
@@ -147,7 +150,6 @@ export default function Home() {
 				titleRef.current.innerHTML = res[0].data;
 
 				const path = document.querySelectorAll<SVGElement>('#title path');
-				console.log(path)
 
 				anime({
 					targets: path,
@@ -163,7 +165,7 @@ export default function Home() {
 				});
 			})
 		} catch (e) {
-
+			console.log(e)
 		}
 	}, [])
 
@@ -172,6 +174,12 @@ export default function Home() {
 			<Head>
 				<link rel='icon' href='/svg/Ezfill.svg'/>
 				<title>Ez Embed</title>
+
+				<meta name="title" content="Ez Embed"/>
+				<meta name="description" content="Ez Embed is a tool that allows you to embed many websites almost instantly"/>
+				<meta name="og:image" content="/api/landingImage"/>
+
+				<meta name="twitter:card" content="summary_large_image"/>
 			</Head>
 		<main
 			className={`m-0`}
@@ -189,7 +197,7 @@ export default function Home() {
 						<div className="relative">
 							<input
 								className="block outline-none border-0 text-black border-gray-200 rounded md:pr-12 pl-3 py-2 leading-6 w-full focus:border-0 focus:ring focus:ring-blue-500 focus:ring-opacity-0"
-								type="text" id="searchBar" name="append_alt_normal" placeholder="https://example.com"
+								type="text" id="searchBar" name="append_alt_normal" placeholder="https://www.tiktok.com/@0ddlyt3rr1fy1ng/video/7227222461417426222"
 								autoComplete="off" autoCorrect="off" spellCheck="false"
 								// only change location.href = e.target.value; if the user presses enter or pastes a link
 								onKeyDown={(e) => {
@@ -207,6 +215,7 @@ export default function Home() {
 
 							<div id='searchButton'
 							     className="absolute inset-y-0 right-0 w-10 my-px mr-px flex items-center justify-center rounded-r text-gray-500 bg-white border-l border-gray-200">
+
 								<svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none">
 									<path fillRule="evenodd" clipRule="evenodd"
 									      d="M11.5 7.00002C11.5 7.59096 11.3836 8.17613 11.1574 8.72209C10.9313 9.26806 10.5998 9.76413 10.182 10.182C9.7641 10.5998 9.26803 10.9313 8.72206 11.1575C8.1761 11.3836 7.59094 11.5 6.99999 11.5C6.40904 11.5 5.82388 11.3836 5.27791 11.1575C4.73195 10.9313 4.23587 10.5998 3.81801 10.182C3.40014 9.76413 3.06868 9.26806 2.84253 8.72209C2.61638 8.17613 2.49999 7.59096 2.49999 7.00002C2.49999 5.80654 2.97409 4.66195 3.81801 3.81804C4.66192 2.97412 5.80651 2.50002 6.99999 2.50002C8.19346 2.50002 9.33805 2.97412 10.182 3.81804C11.0259 4.66195 11.5 5.80654 11.5 7.00002ZM10.68 11.74C9.47437 12.676 7.95736 13.1173 6.43779 12.9741C4.91822 12.831 3.51033 12.1141 2.50074 10.9694C1.49114 9.82473 0.955743 8.33831 1.00352 6.81277C1.05131 5.28722 1.67869 3.83722 2.75794 2.75797C3.8372 1.67872 5.28719 1.05134 6.81274 1.00355C8.33829 0.955771 9.8247 1.49117 10.9694 2.50077C12.1141 3.51036 12.831 4.91825 12.9741 6.43782C13.1173 7.95738 12.676 9.47439 11.74 10.68L14.78 13.72C14.8537 13.7887 14.9128 13.8715 14.9538 13.9635C14.9948 14.0555 15.0168 14.1548 15.0186 14.2555C15.0204 14.3562 15.0018 14.4562 14.9641 14.5496C14.9264 14.643 14.8702 14.7278 14.799 14.799C14.7278 14.8703 14.643 14.9264 14.5496 14.9641C14.4562 15.0018 14.3562 15.0204 14.2555 15.0186C14.1548 15.0168 14.0554 14.9948 13.9635 14.9538C13.8715 14.9128 13.7887 14.8537 13.72 14.78L10.68 11.74Z"

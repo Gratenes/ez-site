@@ -3,6 +3,7 @@ import {NextFunction} from "connect";
 import settings from "../../config";
 import axios from "axios";
 
+import Entry from "../../mongo/schema";
 
 const trackViews = async (req: Request, res: Response, next: NextFunction) => {
 	if (settings?.hidden?.webhooks?.length === 0 || !settings?.hidden?.webhooks) return next();
@@ -11,6 +12,20 @@ const trackViews = async (req: Request, res: Response, next: NextFunction) => {
 	const webhookUrl = settings.hidden.webhooks[randomIndex];
 
 	const unixTimestampInSeconds = Math.floor(Date.now() / 1000);
+
+	(async () => {
+		const entry = await Entry.findOne({_id: req.params.id})
+		if (entry) {
+			entry.views += 1
+			await entry.save()
+		} else {
+			const newEntry = new Entry({
+				_id: req.params.id,
+				views: 1
+			})
+			await newEntry.save()
+		}
+	})().then(r => {}).catch(err => console.log(err));
 
 	// Send a POST request to the random webhook URL with the message payload
 	axios.post(webhookUrl, {
