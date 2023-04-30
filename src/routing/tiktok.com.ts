@@ -8,6 +8,7 @@ import checkDomainName from "@/utils/checkDomain";
 
 import settings from "../../config";
 import * as console from "console";
+import fs from "fs";
 
 const getTiktokVideo = (settings?: any) => {
 	return async (req: Request, res: Response) => {
@@ -19,7 +20,13 @@ const getTiktokVideo = (settings?: any) => {
 					: settings?.originalLink
 			});
 			if (tiktok.content.images) {
-				tiktok.content.video = await convertToVideo(tiktok.content.images, tiktok.content.id, req.headers.host as any);
+				tiktok.content.video = await convertToVideo({
+					pictures: tiktok.content.images,
+					audio: {
+						url: tiktok.music.audio.url,
+						duration: tiktok.music.audio.duration,
+					},
+				}, tiktok.content.id, req.headers.host as any);
 			}
 			res.render("tiktok/index.ejs", {tiktok: tiktok});
 		} catch (e) {
@@ -35,48 +42,94 @@ export default (app: Application) => {
 
 	app.get('/api/video/tiktok/:id.mp4', async (req, res) => {
 		const tiktok = await fetchTiktok(req.params.id)
-		tiktok.content.images ? tiktok.content.video = await convertToVideo(tiktok.content.images, tiktok.content.id, req.headers.host as any) : null
+		tiktok.content.images ? tiktok.content.video = await convertToVideo({
+			pictures: tiktok.content.images,
+			audio: {
+				url: tiktok.music.audio.url,
+				duration: tiktok.music.audio.duration,
+			},
+		}, tiktok.content.id, req.headers.host as any) : null
 
-		const video = tiktok.content.video
-		if (!video) return res.status(404).send('Video not found')
+		const video = tiktok.content.video;
+		const videoPath = `./storage/${tiktok.content.id}/processed.mp4`;
 
-		const range = req.headers.range;
-		if (!range) {
-			res.setHeader('Content-Type', 'video/mp4')
-			res.setHeader('Content-Disposition', 'attachment; filename=video.mp4')
-			res.setHeader('Content-Length', tiktok.content.videoLength)
-			res.setHeader('Cache-Control', 'public, max-age=31536000, immutable')
-			axios(video, {
-				responseType: 'stream'
-			}).then(response => {
-				response.data.pipe(res);
-			}).catch(err => {
-				res.sendStatus(500)
-				console.log(err)
-			})
+		if (fs.existsSync(videoPath)) {
+			const stat = fs.statSync(videoPath);
+			const fileSize = stat.size;
+			const range = req.headers.range;
+
+			if (range) {
+				const parts = range.replace(/bytes=/, "").split("-");
+				const start = parseInt(parts[0], 10);
+				const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+				const chunkSize = (end - start) + 1;
+				const fileStream = fs.createReadStream(videoPath, { start, end });
+				const headers = {
+					"Content-Range": `bytes ${start}-${end}/${fileSize}`,
+					"Accept-Ranges": "bytes",
+					"Content-Length": chunkSize,
+					"Content-Type": "video/mp4",
+				};
+				res.writeHead(206, headers);
+				fileStream.pipe(res);
+			} else {
+				const fileStream = fs.createReadStream(videoPath);
+				const headers = {
+					"Content-Length": fileSize,
+					"Content-Type": "video/mp4",
+					"Cache-Control": "public, max-age=31536000, immutable",
+				};
+				res.writeHead(200, headers);
+				fileStream.pipe(res);
+			}
+		} else if (video) {
+			const range = req.headers.range;
+
+			if (!range) {
+				res.setHeader("Content-Type", "video/mp4");
+				res.setHeader("Content-Disposition", "attachment; filename=video.mp4");
+				res.setHeader("Content-Length", tiktok.content.videoLength);
+				res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+
+				axios(video, {
+					responseType: "stream",
+				})
+					.then((response) => {
+						response.data.pipe(res);
+					})
+					.catch((err) => {
+						res.sendStatus(500);
+						console.log(err);
+					});
+			} else {
+				const parts = range.replace(/bytes=/, "").split("-");
+				const start = parseInt(parts[0], 10);
+				const end = parts[1] ? parseInt(parts[1], 10) : tiktok.content.videoLength - 1;
+				const chunkSize = (end - start) + 1;
+				const headers = {
+					"Content-Type": "video/mp4",
+					"Content-Length": chunkSize,
+					"Content-Range": `bytes ${start}-${end}/${tiktok.content.videoLength}`,
+					"Accept-Ranges": "bytes",
+					"Cache-Control": "public, max-age=31536000, immutable",
+				};
+				const file = axios(video, {
+					responseType: "stream",
+					headers: {
+						Range: `bytes=${start}-${end}`,
+					},
+				})
+					.then((response) => {
+						res.writeHead(206, headers);
+						response.data.pipe(res);
+					})
+					.catch((err) => {
+						res.sendStatus(500);
+						console.log(err);
+					});
+			}
 		} else {
-			const parts = range.replace(/bytes=/, "").split("-");
-			const start = parseInt(parts[0], 10);
-			const end = parts[1] ? parseInt(parts[1], 10) : tiktok.content.videoLength - 1;
-			const chunkSize = (end - start) + 1;
-			const file = axios(video, {
-				responseType: 'stream',
-				headers: {
-					Range: `bytes=${start}-${end}`,
-				},
-			}).then(response => {
-				res.writeHead(206, {
-					'Content-Type': 'video/mp4',
-					'Content-Length': chunkSize,
-					'Content-Range': `bytes ${start}-${end}/${tiktok.content.videoLength}`,
-					'Accept-Ranges': 'bytes',
-					'Cache-Control': 'public, max-age=31536000, immutable',
-				});
-				response.data.pipe(res);
-			}).catch(err => {
-				res.sendStatus(500)
-				console.log(err)
-			})
+			res.status(404).send("Video not found");
 		}
 	})
 	app.get('/api/video/tiktok/random', async (req, res) => {
