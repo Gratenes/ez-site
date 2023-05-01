@@ -21,7 +21,7 @@ export default (app: Application) => {
 
 	const domainCheck = checkDomainName(settings.sites.instagram)
 
-	app.get('/p/:id', domainCheck, trackViews, getInstagramVideo)
-	app.get('/reel/:id', domainCheck, trackViews, getInstagramVideo)
-	app.get('/reels/:id', domainCheck, trackViews, getInstagramVideo)
+	app.get('/p/:id',  trackViews, getInstagramVideo)
+	app.get('/reel/:id',  trackViews, getInstagramVideo)
+	app.get('/reels/:id',  trackViews, getInstagramVideo)
 }
