@@ -65,43 +65,70 @@ export default async function ({audio, pictures,}: {
 		const properImages = path.join(__dirname, '../../', 'storage', uuid, '%d.jpeg')
 		const properAudio = path.join(__dirname, '../../', 'storage', uuid, 'audio.mp3')
 
-		const audioDuration = audio.duration
 
 		const displayTimePerFrame = 2;
 		const frameRate: number = 1 / displayTimePerFrame; // 0.5 frames per second
 
-		const ffmpegCommand = [
-			'-stream_loop', '-1',
-			'-r', `${frameRate}`,
-			'-f', 'image2',
-			'-i', properImages,
-			'-i', properAudio,
-			'-c:v', 'libx264',
-			'-c:a', 'aac',
-			'-pix_fmt', 'yuv420p',
-			'-shortest', // stop encoding when the shortest stream ends (i.e. the audio)
-			'-vf', `scale=trunc(iw/2)*2:trunc(ih/2)*2`,
-			'-shortest',
-			'-t', audioDuration.toString(),
-			'-y', properOutput
-		].flat();
+		const audioDuration = audio.duration
+		const imageDuration = pictures.length * (displayTimePerFrame)
 
-		// Run the ffmpeg command
+		let ffmpegCommand: string[] = []
+
+		if (audioDuration > imageDuration) {
+			ffmpegCommand = [
+				'-stream_loop', '-1',
+				'-r', `${frameRate}`,
+				'-f', 'image2',
+				'-i', properImages,
+				'-i', properAudio,
+				'-c:v', 'libx264',
+				'-c:a', 'aac',
+				'-pix_fmt', 'yuv420p',
+				'-shortest', // stop encoding when the shortest stream ends (i.e. the audio)
+				'-vf', `scale=trunc(iw/2)*2:trunc(ih/2)*2`,
+				'-t', audioDuration.toString(),
+				'-y', properOutput
+			].flat();
+		} else {
+			ffmpegCommand = [
+				'-stream_loop', '-1',
+				'-r', `${frameRate}`,
+				'-f', 'image2',
+				'-i', properImages,
+				'-stream_loop', '-1',
+				'-i', properAudio,
+				'-c:v', 'libx264',
+				'-c:a', 'aac',
+				'-pix_fmt', 'yuv420p',
+				'-vf', `scale=trunc(iw/2)*2:trunc(ih/2)*2`,
+				'-t', imageDuration.toString(),
+				'-y', properOutput
+			].flat();
+		}
+
 		const ffmpegProcess = spawn(ffmpeg as string, ffmpegCommand);
 
 		// Debugging
-		/*
-		ffmpegProcess.stdout.on('data', (data: Buffer) => {
-			console.log(`FFmpeg stdout: ${data}`);
-		});
+		if (true) {
+			console.log(`FFmpeg config:
+				${audioDuration} > ${imageDuration} = ${audioDuration > imageDuration} aka ${audioDuration > imageDuration ? '"audio"' : '"image"'} is longer
+				Output Location: ${properOutput}
+				Images Location: ${properImages}
+				Audio Location: ${properAudio}
+			`)
 
-		ffmpegProcess.stderr.on('data', (data: Buffer) => {
-			console.error(`FFmpeg stderr: ${data}`);
-		});
+			ffmpegProcess.stdout.on('data', (data: Buffer) => {
+				console.log(`FFmpeg stdout: ${data}`);
+			});
 
-		ffmpegProcess.on('error', (err: Error) => {
-			console.error('Error:', err);
-		});*/
+			ffmpegProcess.stderr.on('data', (data: Buffer) => {
+				console.error(`FFmpeg stderr: ${data}`);
+			});
+
+			ffmpegProcess.on('error', (err: Error) => {
+				console.error('Error:', err);
+			});
+		}
 
 		ffmpegProcess.on('close', (code: number) => {
 			if (code === 0) {
