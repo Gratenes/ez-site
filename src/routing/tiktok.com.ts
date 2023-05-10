@@ -120,7 +120,7 @@ export default (app: Application) => {
 					},
 				})
 					.then((response) => {
-						res.writeHead(206, headers);
+						res.writeHead(200, headers);
 						response.data.pipe(res);
 					})
 					.catch((err) => {
