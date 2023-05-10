@@ -5,16 +5,15 @@
     <link rel='icon' href='/svg/Ezfill.svg'/>
     <meta name="theme-color" content="#2b2d31">
     <meta property="og:site_name" content="Made by Chance#0002">
-    <meta property="og:title" content="<%- insta.videos[ 0 ].description; %>" data-rh="true">
-    <meta property="og:description" content="<%- insta.videos[ 0 ].description; %>" data-rh="true">
+    <meta name="twitter:title"
+          content="By <%- insta.user.displayName || 'Unknown'; %> <%- insta.user.username ? `(${insta.user.username})` : ''; %>">
+    <!--<meta property="og:description" content="%- insta.content.video; %" data-rh="true"> -->
     <meta name="twitter:card" content="player">
-    <meta name="twitter:title" content="By <%- insta.username; %>">
-    <meta name="twitter:description" content="By <%- insta.videos[ 0 ].description; %>">
     <meta name="twitter:player:width" content="720">
     <meta name="twitter:player:height" content="720">
-    <meta name="twitter:player:stream" content="<%- `${insta.videos[ 0 ].url}`; %>">
+    <meta name="twitter:player:stream" content="<%- `/api/video/instagram/${insta.content.id}.mp4`; %>">
     <meta name="twitter:player:stream:content_type" content="video/mp4">
-    <meta name="twitter:image" content="<%- insta.videos[ 0 ].thumbnail; %>">
+    <meta name="twitter:image" content="<%- insta.content.covers.static; %>">
 
     <link rel="stylesheet" href="/css/index.css">
     <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.4.0/css/all.css">
@@ -27,15 +26,24 @@
 <h1 class="title"> Instagram Video Embeder </h1>
 <h2 class="subtitle"> Made by Chance#0002</h2>
 <p class="description">This API is designed to be used in Discord EX.
-    https://instagramez.com/p/<%= insta.id; %> </p>
+    https://instagramez.com/p/<%= insta.content.id; %> </p>
 
 <div class="artplayer-container">
     <div class="artplayer-app"></div>
 </div>
 
 <div class="info-container">
-    <p class="description"><%= insta.videos[ 0 ].description; %> </p>
-    <span class="creator-name">Created by: <%- insta.username; %></span>
+    <div class="stats-container">
+    <span class="views"><i
+                class="fa-sharp fa-regular fa-eye"></i>&nbsp;<%- parseInt(insta.content.statistics.views).toLocaleString('en-US'); %></span>
+        <span class="likes"><i
+                    class="fa-regular fa-heart"></i>&nbsp;<%- parseInt(insta.content.statistics.likes).toLocaleString('en-US'); %></span>
+        <span class="shares"><i
+                    class="fa-sharp fa-light fa-share"></i>&nbsp;<%- parseInt(insta.content.statistics.shares).toLocaleString('en-US'); %></span>
+        <span class="comments"><i
+                    class="fa-regular fa-comment"></i>&nbsp;<%- parseInt(insta.content.statistics.comments).toLocaleString('en-US'); %></span>
+    </div>
+    <span class="creator-name">Created by: <%- insta.user.username; %></span>
 </div>
 
 <script>
@@ -51,8 +59,8 @@
 
 	var art = new Artplayer({
 		container: '.artplayer-app',
-		url: '<%- `${insta.videos[ 0 ].url}`; %>',
-		cover: "<%- insta.videos[ 0 ].thumbnail; %>",
+		url: '<%- `/api/video/instagram/${insta.content.id}.mp4`; %>',
+		cover: "<%- insta.content.covers.static; %>",
 		fullscreen: false,
 		fullscreenWeb: true,
 		airplay: true,
@@ -70,7 +78,7 @@
 					marginRight: '5px'
 				},
 				click: function () {
-					fetch('<%- insta.videos[ 0 ].url; %>')
+					fetch('/api/video/instagram/<%- insta.content.id; %>.mp4')
 						.then(resp => resp.blob())
 						.then(blob => {
 							const url = window.URL.createObjectURL(blob);

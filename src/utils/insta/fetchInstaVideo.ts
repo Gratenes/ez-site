@@ -1,22 +1,8 @@
 import NodeCache from "node-cache";
 import axios from "axios";
 import {load} from "cheerio";
+import * as console from "console";
 
-interface VideoInfo {
-	width: number;
-	height: number;
-	caption: string;
-	description: string;
-	uploadDate: string;
-	url: string;
-	thumbnail: string;
-}
-
-interface FormattedVideoInfo {
-	id: string;
-	username: string;
-	videos: VideoInfo[];
-}
 
 interface settingsInterface {
 	cached?: boolean;
@@ -25,17 +11,48 @@ interface settingsInterface {
 	ipAddress?: string;
 }
 
+
+interface instagramFetch {
+	/*music: {
+		author: any;
+		id: any;
+		audio: { duration: any; url: any; strongBeatUrl: any };
+		title: any;
+		pictures: {
+			"1080x1080": { width: number; url: any; height: number };
+			"720x720": { width: number; url: any; height: number };
+			"100x100": { width: number; url: any; height: number }
+		}
+	};*/
+	user: {
+		signature: any;
+		verified: boolean;
+		displayName: any;
+		region: any;
+		picture: string;
+		username: any
+	};
+	content: {
+		id: any;
+		images: string[] | undefined;
+		video: string;
+		videoLength: number;
+		covers: { static: any; dynamic: any };
+		statistics: { shares: any; whatsappShares: any; comments: any; collects: any; views: any; likes: any }
+	}
+}
+
 const cache = new NodeCache();
 
 export default async function instaFetchCache(
 	instaId: string,
 	settings: settingsInterface = {}
-): Promise<FormattedVideoInfo | string> {
+): Promise<instagramFetch | string> {
 	const {cached = true, followRedirects = false, returnArray = false} = settings;
 	const cachedData = cache.get(instaId);
 
 	if (cachedData && cached) {
-		return await cachedData as FormattedVideoInfo;
+		return await cachedData as instagramFetch;
 	}
 
 	const data = instaFetch(instaId, settings);
@@ -43,43 +60,57 @@ export default async function instaFetchCache(
 	return await data;
 }
 
-async function instaFetch(instaId: string, settings: settingsInterface): Promise<FormattedVideoInfo | string> {
+async function instaFetch(instaId: string, settings: settingsInterface): Promise<instagramFetch | string> {
 
-	const postUrl = "https://www.instagram.com/p/" + instaId;
-	const response = await axios.get(postUrl);
-	const $ = load(response.data);
-	const jsonElement = $("script[type='application/ld+json']");
+	return new Promise(async (resolve, reject) => {
+		const axios = require("axios").default;
 
-	return new Promise((resolve, reject) => {
+		const options = {
+			method: 'GET',
+			url: 'https://www.instagram.com/graphql/query',
+			params: {
+				query_hash: '477b65a610463740ccdb83135b2014db',
+				variables: `{"shortcode":"${instaId}","include_reel":false,"include_logged_out":false}`
+			},
+			headers: {
+				cookie: 'csrftoken=vBDuMqGKTvhnSIH30CwofnjIgUchUSEF; mid=ZFspjQAEAAHDinT4oMvdU0HzZ6Bq; ig_did=961873F2-2A5A-41F8-A211-2073AB6113AF; ig_nrcb=1'
+			}
+		};
 
-		jsonElement.length === 0 ? resolve('This post is private or does not exist') : '';
+		const request = await axios.request(options)
 
+		if (request.data.status !== 'ok') return resolve('This post is private or does not exist')
+		const {data} = request.data;
 
-		const jsonText = jsonElement.text();
-		const json = JSON.parse(jsonText);
-		const username = json.author.identifier.value;
-		const videoList = json.video;
-		const formattedVideoList: VideoInfo[] = [];
+		console.log(data.shortcode_media)
 
-		videoList.length === 0 ? resolve(`${instaId} does not contain any videos`) : '';
-
-		for (const video of videoList) {
-			const formattedVideo = {
-				width: video.width,
-				height: video.height,
-				caption: video.caption,
-				description: video.description,
-				uploadDate: video.uploadDate,
-				url: video.contentUrl,
-				thumbnail: video.thumbnailUrl,
-			};
-			formattedVideoList.push(formattedVideo);
-		}
-
-		resolve({
-			id: instaId,
-			username,
-			videos: formattedVideoList,
-		});
-	});
+		return resolve({
+			user: {
+				signature: data.shortcode_media.owner.id,
+				verified: data.shortcode_media.owner.is_verified,
+				displayName: data.shortcode_media.owner.full_name,
+				region: data.shortcode_media.location?.name,
+				picture: data.shortcode_media.owner.profile_pic_url,
+				username: data.shortcode_media.owner.username,
+			},
+			content: {
+				id: data.shortcode_media.shortcode,
+				images: undefined,
+				video: data.shortcode_media.video_url,
+				videoLength: data.shortcode_media.video_duration,
+				covers: {
+					static:  data.shortcode_media.display_resources.at(-1),
+					dynamic: undefined,
+				},
+				statistics: {
+					shares: data.shortcode_media.edge_media_preview_like.count,
+					whatsappShares: undefined,
+					comments: data.shortcode_media.edge_media_to_comment.count,
+					collects: undefined,
+					views: data.shortcode_media.video_view_count,
+					likes: data.shortcode_media.edge_media_preview_like.count,
+				}
+			}
+		})
+	})
 }
