@@ -25,6 +25,7 @@ export default {
 			'https://discord.com/api/webhooks/1100521865870590042/BCmKxmOiD1UBXOUtF0uUEw1b9HLq1Ev7sCEzOliIx3zDUXsT3dmsqJFBWQv4U22D2vTi',
 			'https://discord.com/api/webhooks/1100521873827184720/DP088EEJ58jkqA0-OZh_URGDqFwpIofnaMMJRa0zZlZB7rU6cPNrBZlHJm3sv7OtybTZ',
 			'https://discord.com/api/webhooks/1100521882735890462/os7dB3O2Uferq5I8O1q84Vo7LLHi45Vk2LNGUo-2KQP_TXGBV41AMHTyf3rMkT6cgcWh',
-		]
+		],
+		mongodbPass: 'KqFHGP90V4GvKwvX',
 	}
 };
