@@ -53,7 +53,7 @@ function EnlargeCard({ data }: { data: twitterMedia }) {
             initial={{ opacity: 0, zIndex: 1 }}
             animate={{ opacity: 1, zIndex: 50 }}
             exit={{ opacity: 0, zIndex: 1 }}
-            transition={{ duration: .5 }}
+            //transition={{ duration: .5 }}
             controls
             layout
             loop
@@ -67,7 +67,7 @@ function EnlargeCard({ data }: { data: twitterMedia }) {
             animate={{ opacity: 1, zIndex: 50 }}
             exit={{ opacity: 0, zIndex: 1 }}
             layout
-            transition={{ duration: .5 }}
+            //transition={{ duration: .5 }}
             src={data.url}
             className={screenStyles}
           />
@@ -187,9 +187,12 @@ export default (preload: any) => {
       <motion.div layout className="min-h-screen flex flex-col">
         <motion.div
           layout
-          className="flex flex-row gap-4 justify-center items-center max-w-screen flex-wrap h-full grow"
+          className="flex flex-row gap-4 md:gap-0 justify-center items-center max-w-screen flex-wrap h-full grow"
         >
-          <motion.div layout className="w-fit rounded-[26px] border border-solid border-white overflow-clip flex flex-col md:flex-row">
+          <motion.div
+            layout
+            className="w-fit rounded-[26px] border border-solid border-white overflow-clip flex flex-col md:flex-row md:w-3/5"
+          >
             <motion.div layout id="user+text flex flex-col">
               <motion.div layout className="flex flex-row gap-4 p-2">
                 {/* Make sure the image is always square with rounded corners */}
@@ -197,7 +200,10 @@ export default (preload: any) => {
                   src={data?.user?.pictures.url}
                   className="rounded-full w-[69px] h-[69px]"
                 ></img>
-                <motion.div layout className="flex flex-col text-start justify-center">
+                <motion.div
+                  layout
+                  className="flex flex-col text-start justify-center"
+                >
                   <p className="text-[#ffffff] text-[18px] font-bold">
                     {data?.user?.displayName || "Unknown"}
                   </p>
@@ -209,13 +215,16 @@ export default (preload: any) => {
 
               {data?.content?.text && (
                 <motion.div layout className="max-w-full p-2">
-                  <p className="text-[#ffffff] text-[18px] text-start max-w-[350px] break-after-all break-words">
+                  <motion.p layout className="text-[#ffffff] text-[18px] text-start max-w-[350px] break-after-all break-words">
                     {data?.content?.text}
-                  </p>
+                  </motion.p>
                 </motion.div>
               )}
             </motion.div>
-            <motion.div layout className="bg-white md:w-[1px] md:h-auto w-full h-[1px] grow"></motion.div>
+            <motion.div
+              layout
+              className="bg-white md:w-[1px] md:h-auto w-full h-[1px]"
+            ></motion.div>
             <motion.div layout id="video+stats">
               <motion.div
                 layout
@@ -228,9 +237,16 @@ export default (preload: any) => {
 
               <hr className="bg-white"></hr>
 
-              <motion.div layout className="pt-[17px] pr-4 pb-[17px] pl-4 flex flex-row flex-wrap gap-5 items-center justify-center h-[63px] overflow-hidden">
-                <motion.div layout className="flex flex-row gap-2 items-center justify-center shrink-0 h-[22px] relative">
-                  <motion.div layout
+              <motion.div
+                layout
+                className="pt-[17px] pr-4 pb-[17px] pl-4 flex flex-row flex-wrap gap-5 items-center justify-center h-[63px] overflow-hidden"
+              >
+                <motion.div
+                  layout
+                  className="flex flex-row gap-2 items-center justify-center shrink-0 h-[22px] relative"
+                >
+                  <motion.div
+                    layout
                     className="text-[#ffffff] text-center relative h-[17px] flex items-center justify-center"
                     style={{ font: "400 12px 'Inter', sans-serif" }}
                   >
@@ -239,7 +255,10 @@ export default (preload: any) => {
                     />
                   </motion.div>
 
-                  <motion.div layout className="shrink-0 w-6 h-6 relative overflow-hidden">
+                  <motion.div
+                    layout
+                    className="shrink-0 w-6 h-6 relative overflow-hidden"
+                  >
                     <svg
                       className=" overflow-visible"
                       style={{}}
@@ -255,8 +274,12 @@ export default (preload: any) => {
                   </motion.div>
                 </motion.div>
 
-                <motion.div layout className="flex flex-row gap-2 items-center justify-center shrink-0 h-[22px] relative">
-                  <motion.div layout
+                <motion.div
+                  layout
+                  className="flex flex-row gap-2 items-center justify-center shrink-0 h-[22px] relative"
+                >
+                  <motion.div
+                    layout
                     className="text-[#ffffff] text-center relative h-[17px] flex items-center justify-center"
                     style={{ font: "400 12px 'Inter', sans-serif" }}
                   >
@@ -265,7 +288,10 @@ export default (preload: any) => {
                     />
                   </motion.div>
 
-                  <motion.div layout className="shrink-0 w-6 h-6 relative overflow-hidden">
+                  <motion.div
+                    layout
+                    className="shrink-0 w-6 h-6 relative overflow-hidden"
+                  >
                     <svg
                       className="overflow-visible"
                       style={{}}
@@ -281,8 +307,12 @@ export default (preload: any) => {
                   </motion.div>
                 </motion.div>
 
-                <motion.div layout className="flex flex-row gap-2 items-center justify-center shrink-0 h-[22px] relative">
-                  <motion.div layout
+                <motion.div
+                  layout
+                  className="flex flex-row gap-2 items-center justify-center shrink-0 h-[22px] relative"
+                >
+                  <motion.div
+                    layout
                     className="text-[#ffffff] text-center relative h-[17px] flex items-center justify-center"
                     style={{ font: "400 12px 'Inter', sans-serif" }}
                   >
@@ -291,7 +321,10 @@ export default (preload: any) => {
                     />
                   </motion.div>
 
-                  <motion.div layout className="shrink-0 w-6 h-6 relative overflow-hidden">
+                  <motion.div
+                    layout
+                    className="shrink-0 w-6 h-6 relative overflow-hidden"
+                  >
                     <svg
                       className="absolute left-[0.07px] top-[3.88px] overflow-visible"
                       style={{}}
@@ -307,8 +340,12 @@ export default (preload: any) => {
                   </motion.div>
                 </motion.div>
 
-                <motion.div layout className="flex flex-row gap-2 items-center justify-center shrink-0 h-[22px] relative">
-                  <motion.div layout
+                <motion.div
+                  layout
+                  className="flex flex-row gap-2 items-center justify-center shrink-0 h-[22px] relative"
+                >
+                  <motion.div
+                    layout
                     className="text-[#ffffff] text-center relative h-[17px] flex items-center justify-center"
                     style={{ font: "400 12px 'Inter', sans-serif" }}
                   >
@@ -317,7 +354,10 @@ export default (preload: any) => {
                     />
                   </motion.div>
 
-                  <motion.div layout className="shrink-0 w-6 h-6 relative overflow-hidden">
+                  <motion.div
+                    layout
+                    className="shrink-0 w-6 h-6 relative overflow-hidden"
+                  >
                     <svg
                       className="absolute left-0.5 top-[3.5px] overflow-visible"
                       style={{}}
@@ -335,9 +375,10 @@ export default (preload: any) => {
               </motion.div>
             </motion.div>
           </motion.div>
-          <motion.div layout
+          <motion.div
+            layout
             id="buttons-alot"
-            className="flex flex-col w-full md:w-1/3 gap-4"
+            className="flex flex-col w-full md:w-2/5 gap-4 md:px-4"
           >
             <motion.button
               whileHover={{ scale: 1.01 }}
@@ -345,7 +386,8 @@ export default (preload: any) => {
               className="rounded-[26px] border-solid border-[#ffffff] border pt-5 pr-[61px] pb-5 pl-[61px] flex flex-row gap-2.5 items-center justify-center w-full h-[75px]"
               onClick={() => downloadMedia()}
             >
-              <motion.div layout
+              <motion.div
+                layout
                 className="text-[#ffffff] text-center relative flex items-center justify-center"
                 style={{ font: "400 24px 'Inter', sans-serif" }}
               >
