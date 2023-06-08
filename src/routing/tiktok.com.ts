@@ -1,4 +1,4 @@
-import fetchTiktok from "@/utils/tiktok/fetchTiktok";
+import fetchTiktok from "@/utils/tiktok";
 import convertToVideo from "@/utils/convertPictures";
 import axios from "axios";
 import {Application, Request, Response} from "express";
@@ -41,7 +41,7 @@ export default (app: Application) => {
 	const domainCheck = checkDomainName(settings.sites.tiktok);
 
 	app.get('/api/video/tiktok/:id.mp4', async (req, res) => {
-		const tiktok = await fetchTiktok(req.params.id)
+		const tiktok = await fetchTiktok(req.params.id, {})
 		tiktok.content.images ? tiktok.content.video = await convertToVideo({
 			pictures: tiktok.content.images,
 			audio: {

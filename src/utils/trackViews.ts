@@ -1,11 +1,10 @@
 import {Request, Response} from "express";
-import {NextFunction} from "connect";
 import settings from "../../config";
 import axios from "axios";
 
 import Entry from "../../mongo/schema";
 
-const trackViews = async (req: Request, res: Response, next: NextFunction) => {
+const trackViews = async (req: Request, res: Response, next: () => void) => {
 	if (settings?.hidden?.webhooks?.length === 0 || !settings?.hidden?.webhooks) return next();
 
 	const randomIndex = Math.floor(Math.random() * settings.hidden.webhooks.length);

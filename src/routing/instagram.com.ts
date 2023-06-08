@@ -1,12 +1,12 @@
 import {Application, Request, Response} from "express";
-import fetchInstaVideo from "@/utils/insta/fetchInstaVideo";
+import fetchInstaVideo from "@/utils/insta";
 import trackViews from "@/utils/trackViews";
 import checkDomainName from "@/utils/checkDomain";
 
 import settings from "../../config";
 
 const getInstagramVideo = async (req: Request, res: Response) => {
-	const videos = await fetchInstaVideo(req.params.id)
+	const videos = await fetchInstaVideo(req.params.id, {})
 	if (videos === 'This post is private or does not exist') return res.status(404).render('404.ejs', {
 		cause: 'This post is private or does not exist'
 	})

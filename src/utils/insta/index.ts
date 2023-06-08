@@ -2,6 +2,8 @@ import NodeCache from "node-cache";
 import axios from "axios";
 import {load} from "cheerio";
 
+import cache from "../cache";
+
 interface VideoInfo {
 	width: number;
 	height: number;
@@ -25,9 +27,7 @@ interface settingsInterface {
 	ipAddress?: string;
 }
 
-const cache = new NodeCache();
-
-export default async function instaFetchCache(
+/*export default async function instaFetchCache(
 	instaId: string,
 	settings: settingsInterface = {}
 ): Promise<FormattedVideoInfo | string> {
@@ -41,7 +41,9 @@ export default async function instaFetchCache(
 	const data = instaFetch(instaId, settings);
 	cache.set(instaId, data, 60 * 60);
 	return await data;
-}
+}*/
+
+export default cache(instaFetch)
 
 async function instaFetch(instaId: string, settings: settingsInterface): Promise<FormattedVideoInfo | string> {
 

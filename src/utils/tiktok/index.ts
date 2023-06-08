@@ -3,6 +3,8 @@ import NodeCache from "node-cache";
 import axios from "axios";
 import {createHash} from 'crypto';
 
+import cache from "../cache";
+
 interface tiktokFetch {
 	music: {
 		author: any;
@@ -46,10 +48,10 @@ interface settingsInterface {
 
 type tiktokType<T> = T extends true ? tiktokFetch[] : tiktokFetch;
 
-const cache = new NodeCache();
+//const cache = new NodeCache();
 
 
-export default async function tiktokFetchCache(
+/*export default async function tiktokFetchCache(
 	tiktokId: string,
 	settings: settingsInterface = {
 		cached: true,
@@ -82,7 +84,9 @@ export default async function tiktokFetchCache(
 			reject(error);
 		}
 	});
-}
+}*/
+
+export default cache(tiktokFetch)
 
 async function tiktokFetch(tiktokId: string, settings: settingsInterface): Promise<tiktokType<{
 	returnArray: true | false

@@ -13,9 +13,10 @@ console.log(`Starting server in ${dev ? 'development' : 'production'} mode`);
 const server = next({ dev });
 const handle = server.getRequestHandler();
 
-import fetchTiktok from "@/utils/tiktok/fetchTiktok";
+import fetchTiktok from "@/utils/tiktok";
 import instagramCom from "@/routing/instagram.com";
 import tiktokCom from "@/routing/tiktok.com";
+import twitterCom from "@/routing/twitter.com";
 
 import Entry from "./mongo/schema";
 
@@ -54,11 +55,14 @@ server.prepare().then(() => {
 		}
 	})
 
-	// Load Instagram Videos
+	// Load Instagram Videos - Chance#0002
 	instagramCom(app)
 
-	// Load Tiktok Videos
+	// Load Tiktok Videos - Chance#0002
 	tiktokCom(app)
+
+  // Load Twitter Videos - Chance#0002
+  twitterCom(app)
 
 	/* Next Js */
 	app.get("*", async (req, res) => {
