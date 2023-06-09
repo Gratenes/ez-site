@@ -1,4 +1,4 @@
-import fetchTiktok from "@/utils/tiktok";
+import fetchTiktok from "@/utils/tiktok/index-old";
 import convertToVideo from "@/utils/convertPictures";
 import axios from "axios";
 import {Application, Request, Response} from "express";
@@ -26,7 +26,9 @@ const getTiktokVideo = (settings?: any) => {
 						url: tiktok.music.audio.url,
 						duration: tiktok.music.audio.duration,
 					},
-				}, tiktok.content.id, req.headers.host as any);
+				}, tiktok.content.id);
+
+        console.log(tiktok.content.video)
 			}
 			res.render("tiktok/index.ejs", {tiktok: tiktok});
 		} catch (e) {
@@ -36,6 +38,10 @@ const getTiktokVideo = (settings?: any) => {
 		}
 	}
 }
+
+const redirectToNextJs = (req: Request, res: Response) => {
+  res.redirect(`/embed/tiktok/${req.params.id}`);
+};
 
 export default (app: Application) => {
 	const domainCheck = checkDomainName(settings.sites.tiktok);
@@ -48,7 +54,7 @@ export default (app: Application) => {
 				url: tiktok.music.audio.url,
 				duration: tiktok.music.audio.duration,
 			},
-		}, tiktok.content.id, req.headers.host as any) : null
+		}, tiktok.content.id) : null
 
 		const video = tiktok.content.video;
 		const videoPath = `./storage/${tiktok.content.id}/processed.mp4`;
@@ -154,7 +160,7 @@ export default (app: Application) => {
 	/* This also only allows traffic to tiktokez for this specific routing */
 
 	app.get('/t/:id', domainCheck, trackViews, getTiktokVideo({followRedirects: true}));
-	app.get('/@:username/video/:id', domainCheck, trackViews, getTiktokVideo());
+	app.get("/@:username/video/:id", domainCheck, trackViews, redirectToNextJs);
 	app.get('/:id', domainCheck, subDomain('vt'), trackViews, getTiktokVideo({
 		followRedirects: true,
 		originalLink: (req: Request) => `https://vt.tiktok.com/${req.params.id}`

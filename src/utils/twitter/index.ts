@@ -1,8 +1,6 @@
 import cache from '../cache'
 import axios from "axios";
 
-import type { fetch as responceType } from "../types";
-
 const apiRoute = "https://api.twitter.com/1.1/";
 
 let authToken = "";
@@ -17,6 +15,7 @@ export interface twitterMedia {
 }
 
 export interface twitterFetch {
+  type: "twitter" | "tiktok" | "instagram";
   user: {
     name: any;
     displayName: any;
@@ -52,6 +51,7 @@ const sfwTwitter = async ({ id }: { id: string }): Promise<twitterFetch | null> 
 
   if (!data.extended_entities) return null;
   const mappedNewDataObject: twitterFetch = {
+    type: "twitter",
     user: {
       name: data.user.screen_name,
       displayName: data.user.name,
@@ -126,6 +126,7 @@ const nsfwTwitter = async ({ id }: { id: string }): Promise<twitterFetch | null>
     const user_results = tweet_results.core.user_results.result.legacy;
 
     return {
+      type: "twitter",
       user: {
         name: user_results.screen_name,
         displayName: user_results.name,

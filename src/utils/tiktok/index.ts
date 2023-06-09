@@ -1,286 +1,125 @@
 // import cache npm package
 import NodeCache from "node-cache";
 import axios from "axios";
-import {createHash} from 'crypto';
+import { createHash } from "crypto";
 
 import cache from "../cache";
-
-interface tiktokFetch {
-	music: {
-		author: any;
-		id: any;
-		audio: { duration: any; url: any; strongBeatUrl: any };
-		title: any;
-		pictures: {
-			"1080x1080": { width: number; url: any; height: number };
-			"720x720": { width: number; url: any; height: number };
-			"100x100": { width: number; url: any; height: number }
-		}
-	};
-	user: {
-		signature: any;
-		displayName: any;
-		region: any;
-		pictures: {
-			"1080x1080": { width: number; url: any; height: number };
-			"720x720": { width: number; url: any; height: number };
-			"100x100": { width: number; url: any; height: number }
-		};
-		username: any
-	};
-	content: {
-		id: any;
-		images: string[];
-		video: string;
-		videoLength: number;
-		covers: { static: any; dynamic: any };
-		statistics: { shares: any; whatsappShares: any; comments: any; collects: any; views: any; likes: any }
-	}
-}
+import { embedFetch, embedMedia } from "../types";
 
 interface settingsInterface {
-	cached?: boolean;
-	followRedirects?: boolean;
-	returnArray?: true | false;
-	originalLink?: string;
-	ipAddress?: string;
+  cached?: boolean;
+  followRedirects?: boolean;
+  returnArray?: true | false;
+  originalLink?: string;
+  ipAddress?: string;
 }
 
-type tiktokType<T> = T extends true ? tiktokFetch[] : tiktokFetch;
+export default cache(tiktokFetch);
 
-//const cache = new NodeCache();
+async function tiktokFetch(
+  tiktokId: string,
+  settings: settingsInterface
+): Promise<embedFetch> {
+  if (settings.followRedirects) {
+    const tiktokResponse = await axios.get(
+      settings?.originalLink
+        ? settings?.originalLink
+        : `https://www.tiktok.com/t/${tiktokId}`,
+      {
+        validateStatus: () => true,
+      }
+    );
+    const redirectUrl = tiktokResponse?.request?.res?.responseUrl;
+    tiktokId = redirectUrl?.split("/")?.at(-1)?.split("?")?.at(0);
+  }
 
+  if (!tiktokId) return Promise.reject("No Tiktok ID provided");
 
-/*export default async function tiktokFetchCache(
-	tiktokId: string,
-	settings: settingsInterface = {
-		cached: true,
-		returnArray: false,
-		followRedirects: false,
-	}
-): Promise<tiktokType<{ returnArray: true | false }>> {
-	return new Promise(async (resolve, reject) => {
-		try {
-			const cached = cache.get(tiktokId);
-			if (cached && (settings.cached ?? true)) {
-				resolve(await cached as any)
-			} else {
-				let data: Promise<tiktokType<{ returnArray: true | false }>>;
-				if (settings.returnArray) {
-					data = tiktokFetch(tiktokId, {
-						...settings,
-						returnArray: true
-					});
-				} else {
-					data = tiktokFetch(tiktokId, {
-						returnArray: false,
-						...settings
-					});
-				}
-				cache.set(tiktokId, data, 60 * 60);
-				resolve(await data);
-			}
-		} catch (error) {
-			reject(error);
-		}
-	});
-}*/
+  let device_id = 7218277047537649192;
+  if (settings.ipAddress) {
+    const seed: number = settings.ipAddress
+      .split(".")
+      .reduce(
+        (prev, curr) => parseInt(String(prev), 10) + parseInt(curr, 10),
+        0
+      );
+    device_id = seed;
+  }
 
-export default cache(tiktokFetch)
+  const tiktokResponse = await axios.get(
+    `https://api16-normal-c-useast1a.tiktokv.com/aweme/v1/feed/?aweme_id=${tiktokId}&device_id=${device_id}`
+  );
 
-async function tiktokFetch(tiktokId: string, settings: settingsInterface): Promise<tiktokType<{
-	returnArray: true | false
-}>> {
-	if (settings.followRedirects) {
+  let responce: any;
 
-		const tiktokResponse = await axios.get(settings?.originalLink ? settings?.originalLink : `https://www.tiktok.com/t/${tiktokId}`, {
-			validateStatus: () => true,
-		});
-		const redirectUrl = tiktokResponse?.request?.res?.responseUrl;
+  const firstElement = tiktokResponse.data.aweme_list?.at(0);
 
-		// get the numbers from the thingy till ?
-		tiktokId = redirectUrl?.split('/')?.at(-1)?.split('?')?.at(0);
-	}
+  console.log(firstElement.image_post_info?.images);
 
-	if (!tiktokId) return Promise.reject('No Tiktok ID provided');
+  let media: embedMedia[] = [];
 
-	let device_id = 7218277047537649192;
-	if (settings.ipAddress) {
-		const seed: number = settings.ipAddress.split('.').reduce((prev, curr) => parseInt(String(prev), 10) + parseInt(curr, 10), 0);
-		device_id = seed;
-		const hash: string = createHash('sha256').update(device_id.toString()).digest('hex');
-	}
+  if (firstElement.image_post_info?.images) {
+    media = firstElement.image_post_info?.images?.map((image: any) => ({
+      type: "photo",
+      url:
+        image.display_image.url_list
+          ?.filter((url: string) => url.includes("jpeg"))
+          ?.at(0) || "",
+      thumbnail:
+        image.display_image.url_list
+          ?.filter((url: string) => url.includes("jpeg"))
+          ?.at(0) || "",
+      duration: null,
+      height: image.display_image.height || 0,
+      width: image.display_image.width || 0,
+    }));
+  } else if (firstElement?.video?.play_addr?.url_list?.at(0)) {
+    media.push({
+      type: "video",
+      url: firstElement?.video?.play_addr?.url_list?.at(0) || "",
+      thumbnail: firstElement?.video?.cover?.url_list?.at(0) || "",
+      duration: firstElement?.video?.duration,
+      height: firstElement?.video?.height,
+      width: firstElement?.video?.width,
+    });
+  }
 
-	const tiktokResponse = await axios.get(`https://api16-normal-c-useast1a.tiktokv.com/aweme/v1/feed/?aweme_id=${tiktokId}&device_id=${device_id}`);
+  const thereMightBeAudio = firstElement?.video?.play_addr?.url_list.filter((url: string) => url.includes("mp3"))?.at(0);
+  if (thereMightBeAudio) {
+    media.push({
+      type: "audio",
+      url: thereMightBeAudio || "",
+      thumbnail: null,
+      duration: firstElement?.video?.duration,
+      height: firstElement?.video?.height,
+      width: firstElement?.video?.width,
+    });
+  }
 
-	let responce: any
-
-	if (settings.returnArray) {
-		const elements = tiktokResponse.data.aweme_list;
-		responce = elements.map((firstElement: any) => {
-			return {
-				user: {
-					username: firstElement?.author?.unique_id,
-					displayName: firstElement?.author?.nickname,
-					signature: firstElement?.author?.signature,
-					region: firstElement?.author?.region,
-					pictures: {
-						'1080x1080': {
-							url: firstElement
-								?.author?.avatar_larger?.url_list?.filter((url: string) => url.includes('jpeg'))?.at(0) || undefined,
-							width: 1080,
-							height: 1080
-						},
-						'720x720': {
-							url: firstElement
-								?.author?.avatar_medium?.url_list?.filter((url: string) => url.includes('jpeg'))?.at(0) || undefined,
-							width: 720,
-							height: 720
-						},
-						'100x100': {
-							url: firstElement
-								?.author?.avatar_thumb?.url_list?.filter((url: string) => url.includes('jpeg'))?.at(0) || undefined,
-							width: 100,
-							height: 100
-						}
-					}
-				},
-				content: {
-					id: firstElement?.aweme_id,
-					images: firstElement.image_post_info?.images?.map((image: any) => {
-						return image.display_image.url_list?.filter((url: string) => url.includes('jpeg'))?.at(0);
-					}),
-					videoLength: firstElement?.video?.play_addr?.data_size,
-					video: firstElement?.video?.play_addr.url_list?.filter((url: string) => url.includes('mp4'))?.at(0),
-					covers: {
-						static: firstElement?.video?.cover.url_list?.filter((url: string) => url.includes('jpeg'))?.at(0) || undefined,
-						dynamic: firstElement?.video?.dynamic_cover.url_list?.at(0) || undefined
-					},
-					statistics: {
-						likes: firstElement?.statistics?.digg_count,
-						comments: firstElement?.statistics?.comment_count,
-						shares: firstElement?.statistics?.share_count,
-						views: firstElement?.statistics?.play_count,
-						whatsappShares: firstElement?.statistics?.whatsapp_share_count,
-						collects: firstElement?.statistics?.collect_count,
-					}
-				},
-				music: {
-					id: firstElement?.music?.id,
-					title: firstElement?.music?.title,
-					author: firstElement?.music?.author,
-					pictures: {
-						'1080x1080': {
-							url: firstElement
-								?.music?.cover_large?.url_list?.filter((url: string) => url.includes('jpeg'))?.at(0) || undefined,
-							width: 1080,
-							height: 1080
-						},
-						'720x720': {
-							url: firstElement
-								?.music?.cover_medium?.url_list?.filter((url: string) => url.includes('jpeg'))?.at(0) || undefined,
-							width: 720,
-							height: 720
-						},
-						'100x100': {
-							url: firstElement
-								?.music?.cover_thumb?.url_list?.filter((url: string) => url.includes('jpeg'))?.at(0) || undefined,
-							width: 100,
-							height: 100
-						}
-					},
-					audio: {
-						url: firstElement?.music?.play_url.url_list?.filter((url: string) => url.includes('mp3'))?.at(0) ||
-							firstElement?.music?.play_url.url_list.uri || undefined,
-						duration: firstElement?.music?.duration || undefined,
-						strongBeatUrl: firstElement?.music?.strong_beat_url?.url_list?.filter((url: string) => url.includes('json'))?.at(0) || undefined
-					}
-				}
-			}
-		});
-	} else {
-		const firstElement = tiktokResponse.data.aweme_list?.at(0);
-
-		responce = {
-			user: {
-				username: firstElement?.author?.unique_id,
-				displayName: firstElement?.author?.nickname,
-				signature: firstElement?.author?.signature,
-				region: firstElement?.author?.region,
-				pictures: {
-					'1080x1080': {
-						url: firstElement
-							?.author?.avatar_larger?.url_list?.filter((url: string) => url.includes('jpeg'))?.at(0) || undefined,
-						width: 1080,
-						height: 1080
-					},
-					'720x720': {
-						url: firstElement
-							?.author?.avatar_medium?.url_list?.filter((url: string) => url.includes('jpeg'))?.at(0) || undefined,
-						width: 720,
-						height: 720
-					},
-					'100x100': {
-						url: firstElement
-							?.author?.avatar_thumb?.url_list?.filter((url: string) => url.includes('jpeg'))?.at(0) || undefined,
-						width: 100,
-						height: 100
-					}
-				}
-			},
-			content: {
-				id: firstElement?.aweme_id,
-				images: firstElement.image_post_info?.images?.map((image: any) => {
-					return image.display_image.url_list?.filter((url: string) => url.includes('jpeg'))?.at(0);
-				}),
-				videoLength: firstElement?.video?.play_addr?.data_size,
-				video: firstElement?.video?.play_addr.url_list?.filter((url: string) => url.includes('mp4'))?.at(0),
-				covers: {
-					static: firstElement?.video?.cover.url_list?.filter((url: string) => url.includes('jpeg'))?.at(0) || undefined,
-					dynamic: firstElement?.video?.dynamic_cover.url_list?.at(0) || undefined
-				},
-				statistics: {
-					likes: firstElement?.statistics?.digg_count,
-					comments: firstElement?.statistics?.comment_count,
-					shares: firstElement?.statistics?.share_count,
-					views: firstElement?.statistics?.play_count,
-					whatsappShares: firstElement?.statistics?.whatsapp_share_count,
-					collects: firstElement?.statistics?.collect_count,
-				}
-			},
-			music: {
-				id: firstElement?.music?.id,
-				title: firstElement?.music?.title,
-				author: firstElement?.music?.author,
-				pictures: {
-					'1080x1080': {
-						url: firstElement
-							?.music?.cover_large.url_list?.filter((url: string) => url.includes('jpeg'))?.at(0) || undefined,
-						width: 1080,
-						height: 1080
-					},
-					'720x720': {
-						url: firstElement
-							?.music?.cover_medium.url_list?.filter((url: string) => url.includes('jpeg'))?.at(0) || undefined,
-						width: 720,
-						height: 720
-					},
-					'100x100': {
-						url: firstElement
-							?.music?.cover_thumb.url_list?.filter((url: string) => url.includes('jpeg'))?.at(0) || undefined,
-						width: 100,
-						height: 100
-					}
-				},
-				audio: {
-					url: firstElement?.music?.play_url.url_list?.filter((url: string) => url.includes('mp3'))?.at(0) ||
-						firstElement?.music?.play_url.url_list.uri || undefined,
-					duration: firstElement?.music?.duration || undefined,
-					strongBeatUrl: firstElement?.music?.strong_beat_url?.url_list?.filter((url: string) => url.includes('json'))?.at(0) || undefined
-				}
-			}
-		}
-	}
-
-	return responce;
+  return {
+    type: "tiktok",
+    user: {
+      name: firstElement?.author?.unique_id,
+      displayName: firstElement?.author?.nickname,
+      region: firstElement?.author?.region,
+      followers: firstElement?.author?.follower_count,
+      friends: firstElement?.author?.following_count,
+      pictures: {
+        url: firstElement?.author?.avatar_larger?.url_list?.at(0) || "",
+        banner: null, // No corresponding field in the provided code
+      },
+    },
+    content: {
+      id: firstElement?.aweme_id,
+      text: firstElement?.desc,
+      media: media,
+      statistics: {
+        shares: firstElement?.statistics?.share_count || 0,
+        comments: firstElement?.statistics?.comment_count || 0,
+        follows: firstElement?.statistics?.digg_count || 0,
+        views: firstElement?.statistics?.play_count || 0,
+        likes: firstElement?.statistics?.digg_count || 0,
+      },
+    },
+  };
 }

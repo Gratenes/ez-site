@@ -13,12 +13,13 @@ console.log(`Starting server in ${dev ? 'development' : 'production'} mode`);
 const server = next({ dev });
 const handle = server.getRequestHandler();
 
-import fetchTiktok from "@/utils/tiktok";
+import fetchTiktok from "@/utils/tiktok/index-old";
 import instagramCom from "@/routing/instagram.com";
 import tiktokCom from "@/routing/tiktok.com";
 import twitterCom from "@/routing/twitter.com";
 
 import Entry from "./mongo/schema";
+import { toPicture } from '@/utils/convertPictures';
 
 server.prepare().then(() => {
 	const app = express();
@@ -54,6 +55,19 @@ server.prepare().then(() => {
 			res.status(200).sendFile(video, {root: __dirname})
 		}
 	})
+  app.post('/api/convert/image/picture', express.json({
+    limit: '1000mb'
+  }),
+   
+  async (req, res) => {
+      const { pictures } = req.body;
+      if (!pictures) return res.status(400).json({ error: "No pictures" });
+
+      const uuid = new mongoose.Types.ObjectId().toString();
+      const result = await toPicture({ pictures }, uuid);
+
+      res.status(200).json({ result });
+  })
 
 	// Load Instagram Videos - Chance#0002
 	instagramCom(app)
