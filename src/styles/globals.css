@@ -8,6 +8,14 @@
   --background-end-rgb: 255, 255, 255;
 }
 
+@layer base {
+  :root {
+    --rounded-token: 5px;
+    --background-token: 0 0 0;
+    --primary: 255 255 255
+  }
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --foreground-rgb: 255, 255, 255;
@@ -93,4 +101,20 @@ card {
 ::-webkit-scrollbar-thumb:hover {
   background: #707179;
   border-radius: 4px;
+}
+
+
+/* anime bg for twitter */
+.background-image-move {
+  z-index: -1;
+  animation: rotateBackground 50s linear infinite;
+}
+
+@keyframes rotateBackground {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 100% 100%;
+  }
 }

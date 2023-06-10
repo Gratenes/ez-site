@@ -116,7 +116,7 @@ async function tiktokFetch(
       statistics: {
         shares: firstElement?.statistics?.share_count || 0,
         comments: firstElement?.statistics?.comment_count || 0,
-        follows: firstElement?.statistics?.digg_count || 0,
+        follows: 0,
         views: firstElement?.statistics?.play_count || 0,
         likes: firstElement?.statistics?.digg_count || 0,
       },
