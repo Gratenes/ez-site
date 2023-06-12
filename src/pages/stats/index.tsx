@@ -2,9 +2,13 @@ import React, { useEffect, useRef } from "react";
 import { Chart, registerables, ChartDataset } from "chart.js";
 import { GetServerSidePropsContext } from "next";
 
+
 import moment from "moment";
 
 import mongoose from "mongoose";
+import StatisticsChart from "@/components/statisticsChart";
+import Piechart from "@/components/pieChart";
+import StatsText from "./text";
 const Entry = mongoose.models.Entry;
 
 export const getServerSideProps = async (
@@ -26,145 +30,9 @@ export const getServerSideProps = async (
   };
 };
 
-interface StatisticsChartProps {
-  data: ChartDataset[];
-  dataNormalization?: boolean;
-}
-
-const StatisticsChart: React.FC<StatisticsChartProps> = ({
-  data,
-  dataNormalization,
-}) => {
-  const chartRef = useRef<HTMLCanvasElement>(null);
-  const chartInstanceRef = useRef<Chart | null>(null);
-
-  useEffect(() => {
-    const loadChartPlugin = async () => {
-      const { default: ChartZoom } = await import("chartjs-plugin-zoom");
-    
-      // @ts-ignore
-      const ChartMoment = await import("chartjs-adapter-moment");
-
-      if (chartRef.current) {
-        const ctx = chartRef.current.getContext("2d");
-        if (ctx) {
-          Chart.register(ChartZoom);
-          Chart.register(ChartMoment);
-          Chart.register(...registerables);
-
-          let wasDestroyed = false;
-
-          if (chartInstanceRef.current) {
-            chartInstanceRef.current.destroy();
-            wasDestroyed = true;
-          }
-
-          chartInstanceRef.current = new Chart(ctx, {
-            type: "line",
-            data: {
-              datasets: data.map((dataset, index) => ({
-                ...dataset,
-                backgroundColor: "rgb(34, 29, 37)",
-                borderColor: "rgba(255, 255, 255, 50)",
-                borderWidth: 1,
-                tension: 0.1,
-              })),
-            },
-            options: {
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: {
-                zoom: {
-                  zoom: {
-                    wheel: {
-                      enabled: true,
-                    },
-                    pinch: {
-                      enabled: true,
-                    },
-                    mode: "x",
-                    onZoom: ({ chart }) => {
-                      if (dataNormalization) {
-                        chart.data.datasets.forEach((_, index) => {
-                          const dataset = {
-                            data: data[index]
-                          }
-                          const mergedData = [];
-                          const maxDataPoints = Math.floor(
-                            30 * chart.getZoomLevel()
-                          );
-                          const interval = Math.ceil(
-                            dataset.data.length / maxDataPoints
-                          );
-
-                          for (
-                            let i = 0;
-                            i < dataset.data.length;
-                            i += interval
-                          ) {
-                            const groupData = dataset.data.slice(
-                              i,
-                              i + interval
-                            );
-                            if (groupData.length > 0) {
-                              let averageData;
-                              if (typeof groupData[0] === "number") {
-                                averageData = groupData.reduce((a, b) => a + b, 0)
-                              } else {
-                                averageData = groupData.reduce((a, b) => ({
-                                  x: a.x,
-                                  y: a.y + b.y,
-                                }));
-                              }
-                              mergedData.push(averageData);
-                            }
-                          }
-
-                          chart.data.datasets[index].data = mergedData;
-                        });
-                        chart.update();
-                      }
-                    },
-                  },
-                  pan: {
-                    enabled: true,
-                    mode: "x",
-                  },
-                },
-              },
-              animation: {
-                duration: 0,
-              },
-              hover: {
-                mode: "index",
-                intersect: false,
-              },
-              scales: {
-                x: {
-                  grid: {
-                    color: "rgb(34, 29, 37)",
-                  },
-                  type: "time",
-                },
-                y: {
-                  grid: {
-                    color: "rgb(34, 29, 37)",
-                  },
-                },
-              },
-            },
-          });
-        }
-      }
-    };
-
-    loadChartPlugin();
-  }, [data, dataNormalization]);
-
-  return <canvas ref={chartRef}></canvas>;
-};
-
 const MyPage: React.FC = (props: any) => {
+
+  console.log(props.data[0]);
 
   const allData: ChartDataset = {
     data: props.data.map((d: any) => ({
@@ -174,13 +42,24 @@ const MyPage: React.FC = (props: any) => {
     label: "Combined",
   };
 
-  const sites: ChartDataset[] = ["tiktokez.com", "localhost"].map((site) => ({
+  const colors: any = {
+    "tiktokez.com": "rgb(37, 244, 238)",
+    "twitterez.com": "rgb(29, 155, 240)",
+    "instagramez.com": "rgb(131, 58, 180)",
+  };
+  const sites: ChartDataset[] = [
+    "tiktokez.com",
+    "twitterez.com",
+    "instagramez.com",
+  ].map((site) => ({
     data: props.data
-      .filter((d: any) => d.site === site)
+      .filter((d: any) => d.site.includes(site))
       .map((d: any) => ({
         x: new Date(d.timestamp),
         y: d.views,
       })),
+    backgroundColor: "rgb(34, 29, 37)",
+    borderColor: colors[site],
     label: site,
   }));
 
@@ -191,27 +70,44 @@ const MyPage: React.FC = (props: any) => {
   console.log(props.sites);
 
   return (
-    <div className="h-screen">
-      <p>Combined Data</p>
-      <div className="h-1/2 relative flex flex-col items-center justify-center">
-        <button
-          className="absolute top-0 right-0"
-          onClick={() => setDataNormalization(!dataNormalization)}
-        >
-          {dataNormalization ? "Disable" : "Enable"} Data Normalization
-        </button>
-        <StatisticsChart
-          data={[allData]}
-          dataNormalization={dataNormalization}
-        />
+    <div className="flex flex-col items-center justify-center min-h-screen w-screen py-2 gap-4">
+      <div className="max-h-screen h-screen flex flex-col w-full max-w-[1400px] mx-auto border border-primary">
+        <div className="h-1/2">
+          <p>Combined Data</p>
+          <div className="h-full pb-10 relative flex flex-col items-center justify-center">
+            <button
+              className="absolute top-0 right-0"
+              onClick={() => setDataNormalization(!dataNormalization)}
+            >
+              {dataNormalization ? "Disable" : "Enable"} Data Normalization
+            </button>
+            <StatisticsChart
+              data={[allData]}
+              dataNormalization={dataNormalization}
+            />
+          </div>
+        </div>
+
+        <hr className="border-primary" />
+        <div className="h-1/2">
+          <p>Individual Data</p>
+          <div className="h-full pb-10 flex flex-col items-center justify-center">
+            <StatisticsChart
+              data={sites}
+              dataNormalization={dataNormalization}
+            />
+          </div>
+        </div>
       </div>
 
-      <p>Individual Data</p>
-      <div className="h-1/2 flex flex-col items-center justify-center">
-        <StatisticsChart
-          data={sites}
-          dataNormalization={dataNormalization}
-        />
+      <div className="flex flex-row flex-wrap max-w-[1400px] w-full gap-4">
+        <p>Total Views</p>
+        <div className="h-96 p-4 w-fit flex flex-col items-center justify-center">
+          <Piechart data={sites} dataNormalization={dataNormalization} />
+        </div>
+        <div className="grow">
+          <StatsText data={props.data} />
+        </div>
       </div>
     </div>
   );

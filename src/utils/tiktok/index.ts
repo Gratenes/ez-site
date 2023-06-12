@@ -54,8 +54,6 @@ async function tiktokFetch(
 
   const firstElement = tiktokResponse.data.aweme_list?.at(0);
 
-  console.log(firstElement.image_post_info?.images);
-
   let media: embedMedia[] = [];
 
   if (firstElement.image_post_info?.images) {
