@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, MotionProps } from "framer-motion";
 
 import CountUpNumber from "@/components/countUpNumber";
 import { useRouter } from "next/router";
@@ -6,6 +6,7 @@ import { useState } from "react";
 import Head from "next/head";
 
 import { embedFetch, embedMedia } from "@/utils/types";
+import { JsxElement } from "typescript";
 
 const svgs = {
   tiktok: {
@@ -79,6 +80,65 @@ const svgs = {
 };
 
 
+interface CollapsedChildrenProps extends Omit<MotionProps, "layout"> {
+  children: React.ReactNode;
+  label?: string;
+  height?: string;
+  [key: string]: any;
+}
+
+function CollapsedChildren({
+  children,
+  className,
+  label,
+  height,
+  ...props
+}: CollapsedChildrenProps) {
+  const [collapsed, setCollapsed] = useState(true);
+
+  return (
+    <div className="flex flex-col items-start w-full h-fit">
+      <motion.button
+        className={className}
+        style={{
+          zIndex: 10,
+          overflow: "hidden",
+        }}
+        transition={{
+          duration: 0.2,
+        }}
+        layout
+        {...props}
+        onTap={() => setCollapsed(!collapsed)}
+      >
+        <div className="w-full text-center align-middle flex flex-col items-center justify-center" style={
+          {
+            height
+          }
+        }>
+          <span className="text-white text-2xl font-bold">{label}</span>
+        </div>
+        <AnimatePresence initial={false} custom={collapsed}>
+          {!collapsed && (
+            <motion.div
+              key="content"
+              style={{
+                overflow: "hidden",
+              }}
+              onTap={e => e.stopPropagation()}
+              initial={{ height: 0 }}
+              animate={{ height: `auto` }}
+              exit={{ height: 0 }}
+            >
+              {children}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.button>
+    </div>
+  );
+}
+
 function EnlargeCard({ data }: { data: embedMedia }) {
   const [displayed, setDisplayed] = useState(false);
 
@@ -88,6 +148,9 @@ function EnlargeCard({ data }: { data: embedMedia }) {
 
   return (
     <motion.button
+      exit={{
+        height: 0,
+      }}
       whileHover={
         {
           //scale: displayed ? 1 : 1.01,
@@ -259,17 +322,21 @@ export default (preload: any) => {
         </Head>
       )}
 
-      {data && <div
-        className={
-          `fixed top-0 left-0 min-h-screen background-image-move w-screen opacity-5`
-        }
-        style={{
-          
-          backgroundImage: `url('/svg/${data.type}.svg')`,
-        }}
-      />}
+      {data && (
+        <div
+          className={`fixed top-0 left-0 min-h-screen background-image-move w-screen opacity-5`}
+          style={{
+            backgroundImage: `url('/svg/${data.type}.svg')`,
+          }}
+        />
+      )}
       {data ? (
-        <motion.div layout className="min-h-screen flex flex-col ">
+        <motion.div
+          layout
+          className={`min-h-screen flex flex-col ${
+            data.content.media.length == 0 ? "max-w-[1000px]" : ""
+          } mx-auto`}
+        >
           <motion.div
             layout
             className="flex flex-row md:p-4 gap-4 md:gap-0 justify-center items-center max-w-screen flex-wrap h-full grow"
@@ -532,6 +599,17 @@ export default (preload: any) => {
                   );
                 })}
             </motion.div>
+            {(data.content.generatedMedia?.length || 0) > 0 && (
+              <CollapsedChildren
+                height="75px"
+                label="GENERATED MEDIA"
+                className="rounded-token flex flex-col md:mt-4 border border-primary gap-2.5 items-center justify-center w-full min-h-[75px]"
+              >
+                {data?.content?.generatedMedia?.map(
+                  (entry: embedMedia, index) => EnlargeCard({ data: entry })
+                )}
+              </CollapsedChildren>
+            )}
           </motion.div>
         </motion.div>
       ) : (

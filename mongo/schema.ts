@@ -10,6 +10,10 @@ const entrySchema = new mongoose.Schema({
 		type: Date,
 		default: Date.now,
 	},
+  site: {
+    type: String,
+    required: true,
+  },
 	views: {
 		type: Number,
 		default: 0,

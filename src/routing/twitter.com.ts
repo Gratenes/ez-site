@@ -29,5 +29,5 @@ export default (app: Application) => {
 
 	const domainCheck = checkDomainName(settings.sites.twitter)
 
-	app.get("/:user/status/:id/", trackViews, redirectToNextJs);
+	app.get("/:user/status/:id/", domainCheck, trackViews, redirectToNextJs);
 }

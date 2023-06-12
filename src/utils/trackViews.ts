@@ -15,11 +15,13 @@ const trackViews = async (req: Request, res: Response, next: () => void) => {
 	(async () => {
 		const entry = await Entry.findOne({_id: req.params.id})
 		if (entry) {
+      entry.site = req.hostname
 			entry.views += 1
 			await entry.save()
 		} else {
 			const newEntry = new Entry({
 				_id: req.params.id,
+        site: req.hostname,
 				views: 1
 			})
 			await newEntry.save()
