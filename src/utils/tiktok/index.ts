@@ -94,8 +94,11 @@ async function tiktokFetch(
     });
   }
 
+  console.log(firstElement?.aweme_id, tiktokId, firstElement?.aweme_id !== tiktokId)
   return {
     type: "tiktok",
+    id: firstElement?.aweme_id,
+    incorrectId: firstElement?.aweme_id !== tiktokId,
     user: {
       name: firstElement?.author?.unique_id,
       displayName: firstElement?.author?.nickname,

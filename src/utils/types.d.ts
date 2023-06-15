@@ -9,6 +9,8 @@ export interface embedMedia {
 
 export interface embedFetch {
   type: "twitter" | "tiktok" | "instagram";
+  id: string;
+  incorrectId: boolean;
   user: {
     name: any;
     displayName: any;

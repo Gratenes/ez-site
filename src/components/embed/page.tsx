@@ -2,11 +2,12 @@ import { motion, AnimatePresence, MotionProps } from "framer-motion";
 
 import CountUpNumber from "@/components/countUpNumber";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Head from "next/head";
 
 import { embedFetch, embedMedia } from "@/utils/types";
 import { JsxElement } from "typescript";
+import { AlertContext } from "../alert";
 
 const svgs = {
   tiktok: {
@@ -204,6 +205,7 @@ function EnlargeCard({ data }: { data: embedMedia }) {
 }
 
 export default (preload: any) => {
+  const { setAlert } = useContext(AlertContext);
   const { data }: { data: embedFetch } = preload;
 
   function downloadMedia(num?: number) {
@@ -250,6 +252,18 @@ export default (preload: any) => {
       });
     }
   }
+
+  useEffect(() => {
+    if (data.incorrectId) {
+      setAlert(
+        "Incorrect ID, this can be caused by multiple reasons so please join the discord server and send a message in #support",
+        {
+          type: "error",
+          linkto: "https://discord.gg/D72MC6D2dZ",
+        }
+      );
+    }
+  }, [])
 
   const router = useRouter();
   const { n } = router.query;
@@ -334,7 +348,7 @@ export default (preload: any) => {
         <motion.div
           layout
           className={`min-h-screen flex flex-col ${
-            data.content.media.length == 0 ? "max-w-[1000px]" : ""
+            data?.content?.media?.length == 1 ? "max-w-[1400px]" : ""
           } mx-auto`}
         >
           <motion.div

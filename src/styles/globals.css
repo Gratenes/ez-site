@@ -4,15 +4,66 @@
 
 :root {
   --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+  /*--background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;*/
 }
 
 @layer base {
   :root {
-    --rounded-token: 5px;
-    --background-token: 0 0 0;
-    --primary: 255 255 255
+    --theme-rounded-base: 5px;
+
+    --theme-blur: 2px;
+    --theme-blur-strong: 4px;
+
+    --color-background: 0 0 0;
+    --color-primary: 255 255 255; /* ⬅ #B58EF0 */
+    --color-secondary: 111 152 247; /* ⬅ #6F98F7 */
+    --color-tertiary: 158 110 247; /* ⬅ #9e6ef7 */
+    --color-success: 110 247 188; /* ⬅ #6ef7bc */
+    --color-warning: 204 247 110; /* ⬅ #ccf76e */
+    --color-error: 247 110 110; /* ⬅ #f76e6e */
+  }
+}
+
+@layer components {
+  .glass-error {
+    background-color: theme('colors.error'/ .09);
+    border-radius: theme('borderRadius.token');
+    backdrop-filter: blur(var(--theme-blur));
+    -webkit-backdrop-filter: blur(var(--theme-blur));
+    border: 1px solid theme('colors.error' / 1);
+  }
+
+  .glass-success {
+    background-color: theme('colors.success'/ .09);
+    border-radius: theme('borderRadius.token');
+    backdrop-filter: blur(var(--theme-blur));
+    -webkit-backdrop-filter: blur(var(--theme-blur));
+    border: 1px solid theme('colors.success' / 1);
+  }
+
+  .glass-warning {
+    background-color: theme('colors.warning'/ .09);
+    border-radius: theme('borderRadius.token');
+    backdrop-filter: blur(var(--theme-blur));
+    -webkit-backdrop-filter: blur(var(--theme-blur));
+    border: 1px solid theme('colors.warning' / 1);
+  }
+
+  .glass-primary {
+    background-color: theme('colors.primary'/ .09);
+    border-radius: theme('borderRadius.token');
+    backdrop-filter: blur(var(--theme-blur));
+    -webkit-backdrop-filter: blur(var(--theme-blur));
+    border: 1px solid theme('colors.primary' / 1);
+  }
+
+  .glass-secondary {
+    background-color: theme('colors.secondary'/ .09);
+    border-radius: theme('borderRadius.token');
+    backdrop-filter: blur(var(--theme-blur));
+    -webkit-backdrop-filter: blur(var(--theme-blur));
+    border: 1px solid theme('colors.secondary' / 1);
   }
 }
 
@@ -25,7 +76,7 @@
 }
 
 body {
-  background-color: rgb(8, 8, 8);
+  background-color: rgb(var(--color-background));
   color: white;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   text-align: center;

@@ -2,42 +2,13 @@ import fetchTiktok from "@/utils/tiktok/index-old";
 import convertToVideo from "@/utils/convertPictures";
 import axios from "axios";
 import {Application, Request, Response} from "express";
-import trackViews from "@/utils/trackViews";
+import trackViews, { updateEntry } from "@/utils/trackViews";
 import subDomain from "@/utils/subDomain";
 import checkDomainName from "@/utils/checkDomain";
 
 import settings from "../../config";
 import * as console from "console";
 import fs from "fs";
-
-const getTiktokVideo = (settings?: any) => {
-	return async (req: Request, res: Response) => {
-		try {
-			const tiktok = await fetchTiktok(req.params.id, {
-				...settings,
-				originalLink: typeof settings?.originalLink === 'function'
-					? settings?.originalLink(req)
-					: settings?.originalLink
-			});
-			if (tiktok.content.images) {
-				tiktok.content.video = await convertToVideo({
-					pictures: tiktok.content.images,
-					audio: {
-						url: tiktok.music.audio.url,
-						duration: tiktok.music.audio.duration,
-					},
-				}, tiktok.content.id);
-
-        console.log(tiktok.content.video)
-			}
-			res.render("tiktok/index.ejs", {tiktok: tiktok});
-		} catch (e) {
-			res.render('404.ejs', {
-				cause: 'Video not found'
-			})
-		}
-	}
-}
 
 
 const resolveTikTokId = async (url: string): Promise<string> => {
@@ -52,6 +23,7 @@ const redirectToNextJs = (link?: string) => {
   if (link) {
     return (req: Request, res: Response) => {
       resolveTikTokId(link + req.params.id).then((id) => {
+        updateEntry(id, req.hostname);
         res.redirect(`/embed/tiktok/${id}`);
       });
     };
@@ -172,13 +144,13 @@ export default (app: Application) => {
 		res.setHeader('Content-Type', 'application/json').send(tiktok)
 	})
 
-	app.get('/https\://www.tiktok.com/t/:id', trackViews, redirectToNextJs('https://www.tiktok.com/t/'));
+	app.get('/https\://www.tiktok.com/t/:id', redirectToNextJs('https://www.tiktok.com/t/'));
 	app.get('/https\://www.tiktok.com/@:username/video/:id', trackViews, redirectToNextJs());
 
-	app.get('/v/:id', domainCheck, subDomain('m'), trackViews, redirectToNextJs('https://m.tiktok.com/v/'));
-	app.get('/:id', domainCheck, subDomain('vt'), trackViews, redirectToNextJs('https://vt.tiktok.com/'));
-	app.get('/:id', domainCheck, subDomain('vm'), trackViews, redirectToNextJs('https://vm.tiktok.com/'));
-	app.get("/t/:id", domainCheck, trackViews, redirectToNextJs('https://www.tiktok.com/t/'));
+	app.get('/v/:id', domainCheck, subDomain('m'), redirectToNextJs('https://m.tiktok.com/v/'));
+	app.get('/:id', domainCheck, subDomain('vt'), redirectToNextJs('https://vt.tiktok.com/'));
+	app.get('/:id', domainCheck, subDomain('vm'), redirectToNextJs('https://vm.tiktok.com/'));
+	app.get("/t/:id", domainCheck, redirectToNextJs('https://www.tiktok.com/t/'));
 	app.get("/@:username/video/:id", domainCheck, trackViews, redirectToNextJs());
   
 }
