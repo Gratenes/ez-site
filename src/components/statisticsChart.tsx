@@ -85,12 +85,15 @@ const StatisticsChart: React.FC<StatisticsChartProps> = ({
                               let averageData;
                               if (typeof groupData[0] === "number") {
                                 averageData = groupData.reduce(
+                                  // @ts-ignore
                                   (a, b) => a + b,
                                   0
                                 );
                               } else {
                                 averageData = groupData.reduce((a, b) => ({
+                                  // @ts-ignore
                                   x: a.x,
+                                  // @ts-ignore
                                   y: a.y + b.y,
                                 }));
                               }
