@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 import { GetServerSidePropsContext } from "next";
 import { useState, useEffect } from "react";
-
 interface SiteData {
   views: number;
   site: string;

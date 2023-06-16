@@ -39,3 +39,4 @@ storage/
 .env
 config.ts
 config.ts
+dist/

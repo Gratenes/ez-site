@@ -455,7 +455,7 @@ export default function Home() {
                 //height: infoHeight, min-h-[${infoHeight}]
               }
             }
-            className={` w-full flex flex-col justify-evenly md:gap-[50vh] my-20`}
+            className={` w-full flex flex-col justify-evenly md:gap-[50vh] my-1`}
           >
             <div
               id="tiles"
