@@ -1,3 +1,4 @@
+import { embedFetch, embedMedia, embedFunction } from '.';
 import cache from '../cache'
 import axios from "axios";
 
@@ -5,43 +6,8 @@ const apiRoute = "https://api.twitter.com/1.1/";
 
 let authToken = "";
 
-export interface twitterMedia {
-  type: "video" | "photo" | "gif";
-  url: string;
-  thumbnail: string | null;
-  duration: number | null;
-  height: number;
-  width: number;
-}
 
-export interface twitterFetch {
-  type: "twitter" | "tiktok" | "instagram";
-  user: {
-    name: any;
-    displayName: any;
-    region: any;
-    followers: any;
-    friends: any;
-    pictures: {
-      url: any;
-      banner: any | null;
-    };
-  };
-  content: {
-    id: any;
-    text: string | null;
-    media: twitterMedia[];
-    statistics: {
-      shares: number;
-      comments: number;
-      follows: number;
-      views: number;
-      likes: number;
-    };
-  };
-}
-
-const sfwTwitter = async ({ id }: { id: string }): Promise<twitterFetch | null> => {
+const sfwTwitter = async ({ id }: { id: string }): embedFunction => {
   const { data } = await axios.get(`${apiRoute}statuses/show.json?id=${id}`, {
     headers: {
       Authorization:
@@ -49,8 +15,16 @@ const sfwTwitter = async ({ id }: { id: string }): Promise<twitterFetch | null> 
     },
   });
 
-  if (!data.extended_entities) return null;
-  const mappedNewDataObject: twitterFetch = {
+  if (!data.extended_entities)
+    return {
+      id: data.id_str || id,
+      reason: "This post is private or does not exist",
+      type: "twitter",
+    };
+
+  return {
+    id: data.id_str || id,
+    incorrectId: data.id_str !== id,
     type: "twitter",
     user: {
       name: data.user.screen_name,
@@ -66,7 +40,7 @@ const sfwTwitter = async ({ id }: { id: string }): Promise<twitterFetch | null> 
     content: {
       id: data.id_str,
       text: data.text,
-      media: data.extended_entities.media.map((media: any): twitterMedia => {
+      media: data.extended_entities.media.map((media: any): embedMedia => {
         console.log(media);
         return {
           duration: media.video_info ? media.video_info.duration_millis : null,
@@ -94,14 +68,15 @@ const sfwTwitter = async ({ id }: { id: string }): Promise<twitterFetch | null> 
       },
     },
   };
-
-  return mappedNewDataObject;
+;
 };
 
-const nsfwTwitter = async ({ id }: { id: string }): Promise<twitterFetch | null>  => {
+const nsfwTwitter = async ({ id }: { id: string }): embedFunction => {
   //twitter_auth_token,twitter_ct0,twitter_api
 
+  console.time("logic");
   try {
+    console.time("twitter");
     const request = await axios({
       url: process.env.twitter_api,
       params: {
@@ -115,10 +90,18 @@ const nsfwTwitter = async ({ id }: { id: string }): Promise<twitterFetch | null>
         Authorization: `Bearer ${process.env.twitter_bearer_token}`,
       },
     });
-
-    const tweet_results = request.data.data.threaded_conversation_with_injections_v2?.instructions[0].entries[0].content.itemContent.tweet_results.result;
-    if (!tweet_results) return null;
+    console.timeEnd("twitter");
     
+
+    const tweet_results =
+      request.data.data.threaded_conversation_with_injections_v2
+        ?.instructions[0].entries[0].content.itemContent.tweet_results.result;
+    if (!tweet_results) return {
+      id: id,
+      reason: "this post is private or does not exist",
+      type: "twitter",
+    };
+
     const media = tweet_results.legacy.extended_entities.media;
 
     //return request.data.data
@@ -126,6 +109,8 @@ const nsfwTwitter = async ({ id }: { id: string }): Promise<twitterFetch | null>
     const user_results = tweet_results.core.user_results.result.legacy;
 
     return {
+      id: tweet_results.legacy.id_str || id,
+      incorrectId: id !== tweet_results.legacy.id_str,
       type: "twitter",
       user: {
         name: user_results.screen_name,
@@ -141,22 +126,11 @@ const nsfwTwitter = async ({ id }: { id: string }): Promise<twitterFetch | null>
       content: {
         id: tweet_results.legacy.id_str,
         text: tweet_results.legacy.full_text,
-        //images: media.map((media: any) => media.media_url_https),
-        /*video: media[0].video_info?.variants.reduce(
-          (
-            prev: { bitrate?: number; url: string },
-            current: { bitrate?: number; url: string }
-          ) => ((prev.bitrate || 0) > (current.bitrate || 0) ? prev : current)
-        ).url || null,
-        videoLength: media[0].video_info?.duration_millis / 1000 || null,
-        covers: {
-          static: media[0].media_url_https,
-          dynamic: user_results.profile_banner_url || null,
-        },*/
-        media: media.map((media: any): twitterMedia => {
-          console.log(media);
+        media: media.map((media: any): embedMedia => {
           return {
-            duration: media.video_info ? media.video_info.duration_millis : null,
+            duration: media.video_info
+              ? media.video_info.duration_millis
+              : null,
             height: media.sizes.large.h,
             width: media.sizes.large.w,
             type: media.type,
@@ -166,7 +140,9 @@ const nsfwTwitter = async ({ id }: { id: string }): Promise<twitterFetch | null>
                     prev: { bitrate?: number; url: string },
                     current: { bitrate?: number; url: string }
                   ) =>
-                    (prev.bitrate || 0) > (current.bitrate || 0) ? prev : current
+                    (prev.bitrate || 0) > (current.bitrate || 0)
+                      ? prev
+                      : current
                 ).url || null
               : media.media_url_https,
             thumbnail: media.type === "video" ? media.media_url_https : null,
@@ -182,13 +158,19 @@ const nsfwTwitter = async ({ id }: { id: string }): Promise<twitterFetch | null>
         },
       },
     };
-
-
-  } catch (error) {
+  } catch (error: any) {
     console.log(error);
-    return null;
+    return {
+      id: id,
+      reason: "serer error",
+      cause: error.message,
+      code: 500,
+      type: "twitter",
+    };
+  } finally {
+    console.timeEnd("logic");
   }
-}
+};
 
 
 export const getTwitterVideoSFW = cache(sfwTwitter);

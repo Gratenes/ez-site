@@ -1,10 +1,7 @@
 // import cache npm package
-import NodeCache from "node-cache";
 import axios from "axios";
-import { createHash } from "crypto";
-
 import cache from "../cache";
-import { embedFetch, embedMedia } from "../types";
+import { embedFetch, embedMedia } from ".";
 
 interface settingsInterface {
   cached?: boolean;
@@ -17,25 +14,25 @@ interface settingsInterface {
 export default cache(tiktokFetch);
 
 async function tiktokFetch(
-  tiktokId: string,
+  {id}: {id: string},
   settings: settingsInterface
 ): Promise<embedFetch> {
   if (settings.followRedirects) {
     const tiktokResponse = await axios.get(
       settings?.originalLink
         ? settings?.originalLink
-        : `https://www.tiktok.com/t/${tiktokId}`,
+        : `https://www.tiktok.com/t/${id}`,
       {
         validateStatus: () => true,
       }
     );
     const redirectUrl = tiktokResponse?.request?.res?.responseUrl;
-    tiktokId = redirectUrl?.split("/")?.at(-1)?.split("?")?.at(0);
+    id = redirectUrl?.split("/")?.at(-1)?.split("?")?.at(0);
   }
 
-  if (!tiktokId) return Promise.reject("No Tiktok ID provided");
+  if (!id) return Promise.reject("No Tiktok ID provided");
 
-  let device_id = 7218277047537649192;
+  let device_id: number = Math.floor(Math.random() * 100000000);
   if (settings.ipAddress) {
     const seed: number = settings.ipAddress
       .split(".")
@@ -47,7 +44,7 @@ async function tiktokFetch(
   }
 
   const tiktokResponse = await axios.get(
-    `https://api16-normal-c-useast1a.tiktokv.com/aweme/v1/feed/?aweme_id=${tiktokId}&device_id=${device_id}`
+    `https://api16-normal-c-useast1a.tiktokv.com/aweme/v1/feed/?aweme_id=${id}&device_id=${device_id}`
   );
 
   let responce: any;
@@ -82,7 +79,9 @@ async function tiktokFetch(
     });
   }
 
-  const thereMightBeAudio = firstElement?.video?.play_addr?.url_list.filter((url: string) => url.includes("mp3"))?.at(0);
+  const thereMightBeAudio = firstElement?.video?.play_addr?.url_list
+    .filter((url: string) => url.includes("mp3"))
+    ?.at(0);
   if (thereMightBeAudio) {
     media.push({
       type: "audio",
@@ -94,11 +93,15 @@ async function tiktokFetch(
     });
   }
 
-  console.log(firstElement?.aweme_id, tiktokId, firstElement?.aweme_id !== tiktokId)
+  console.log(
+    firstElement?.aweme_id,
+    id,
+    firstElement?.aweme_id !== id
+  );
   return {
     type: "tiktok",
     id: firstElement?.aweme_id,
-    incorrectId: firstElement?.aweme_id !== tiktokId,
+    incorrectId: firstElement?.aweme_id !== id,
     user: {
       name: firstElement?.author?.unique_id,
       displayName: firstElement?.author?.nickname,

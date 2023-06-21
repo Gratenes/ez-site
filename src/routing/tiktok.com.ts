@@ -24,12 +24,12 @@ const redirectToNextJs = (link?: string) => {
     return (req: Request, res: Response) => {
       resolveTikTokId(link + req.params.id).then((id) => {
         updateEntry(id, req.hostname);
-        res.redirect(`/embed/tiktok/${id}`);
+        res.redirect(`/embed/${id}?type=tiktok`);
       });
     };
   } else {
     return (req: Request, res: Response) => {
-      res.redirect(`/embed/tiktok/${req.params.id}`);
+      res.redirect(`/embed/${req.params.id}?type=tiktok`);
     };
   }
 };

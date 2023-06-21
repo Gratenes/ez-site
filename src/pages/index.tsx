@@ -28,7 +28,7 @@ export function CurrentSupport () {
         { type: "Video Embed", text: "🟢" },
         {
           type: "Picture Embed",
-          text: "🔴",
+          text: "🟢",
         },
         {
           type: "Render Video",
