@@ -27,6 +27,9 @@ would turn into ->
 [https://www.tiktok**ez**
 .com/@coldonestv/video/7219717130806201602](https://www.tiktokez.com/@coldonestv/video/7219717130806201602)
 
+# Download Support
+Download all of your favorate content including: tiktok, instagram, and twitter videos
+
 # How to install (for own use)
 
 ```bash
