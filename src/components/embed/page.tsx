@@ -8,6 +8,7 @@ import Head from "next/head";
 import { embedFetch, embedMedia } from "@/utils/types";
 import { JsxElement } from "typescript";
 import { AlertContext } from "../alert";
+import { embedFetchError } from "@/utils/requestData";
 
 const svgs = {
   tiktok: {
@@ -272,9 +273,10 @@ function EnlargeCard({ data }: { data: embedMedia }) {
 
 export default (preload: any) => {
   const { setAlert } = useContext(AlertContext);
-  const { data }: { data: embedFetch } = preload;
+  const { data }: { data: embedFetch | embedFetchError } = preload;
 
   function downloadMedia(num?: number) {
+    if ('reason' in data) return;
     if (num) {
       const doc = data.content.media.at(num);
       if (!doc) return;
@@ -320,14 +322,20 @@ export default (preload: any) => {
   }
 
   useEffect(() => {
-    if (data.incorrectId) {
-      setAlert(
-        "Incorrect ID, this can be caused by multiple reasons so please join the discord server and send a message in #support",
-        {
-          type: "error",
-          linkto: "https://discord.gg/D72MC6D2dZ",
-        }
-      );
+    if ("reason" in data) {
+      setAlert(data.reason || "Error", {
+        type: "error",
+      });
+    } else {
+      if (data.incorrectId) {
+        setAlert(
+          "Incorrect ID, this can be caused by multiple reasons so please join the discord server and send a message in #support",
+          {
+            type: "error",
+            linkto: "https://discord.gg/D72MC6D2dZ",
+          }
+        );
+      }
     }
   }, [])
 
@@ -338,7 +346,7 @@ export default (preload: any) => {
 
   return (
     <>
-      {data && (
+      {"user" in data && (
         <Head>
           <link rel="icon" href="/svg/Ezfill.svg" />
           <meta name="theme-color" content="#2b2d31" />
@@ -371,7 +379,10 @@ export default (preload: any) => {
               <meta name="twitter:player:height" content="720" />
               <meta
                 name="twitter:player:stream"
-                content={`/api/video/${data.id}?type=${data.type}` || data.content.media?.at(displayed)?.url}
+                content={
+                  `/api/video/${data.id}?type=${data.type}` ||
+                  data.content.media?.at(displayed)?.url
+                }
               />
               <meta
                 name="twitter:player:stream:content_type"
@@ -402,7 +413,7 @@ export default (preload: any) => {
         </Head>
       )}
 
-      {data && (
+      {"user" in data && (
         <div
           className={`fixed top-0 left-0 min-h-screen background-image-move w-screen opacity-5`}
           style={{
@@ -410,7 +421,7 @@ export default (preload: any) => {
           }}
         />
       )}
-      {data ? (
+      {"user" in data ? (
         <motion.div
           layout
           className={`min-h-screen flex flex-col ${
@@ -701,8 +712,12 @@ export default (preload: any) => {
             transition={{ duration: 0.5 }}
           >
             <div className="border rounded-token border-primary p-8">
-              <h1 className="text-white text-4xl">404</h1>
-              <p className="text-white text-lg">Page not found</p>
+              <h1 className="text-white text-4xl">{
+                data.code|| "404"
+              }</h1>
+              <p className="text-white text-lg">
+                { data.cause }
+              </p>
             </div>
           </motion.div>
         </>
