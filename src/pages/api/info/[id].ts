@@ -21,5 +21,5 @@ export default async function handler(
 
   if ("reason" in request) return res.status(400).json(request);
 
-  return request;
+  return res.json(request);
 }
