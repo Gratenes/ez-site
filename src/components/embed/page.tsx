@@ -350,7 +350,7 @@ export default (preload: any) => {
         <Head>
           <link rel="icon" href="/svg/Ezfill.svg" />
           <meta name="theme-color" content="#2b2d31" />
-          <meta property="og:site_name" content="Made by Chance#0002" />
+          {/*<meta property="og:site_name" content="Made by Chance#0002" /> Ima get rid of this cuz its tacky kinda*/}
           <meta
             name="twitter:title"
             content={`${data.user.displayName || "Unknown"} ${
