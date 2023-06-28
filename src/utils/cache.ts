@@ -5,7 +5,7 @@ import NodeCache from "node-cache";
 type CacheFunction<A extends any[], R> = (...args: A) => Promise<R>;
 
 export default <A extends any[], R>(func: CacheFunction<A, R>) => {
-  const cache = new NodeCache({ stdTTL: 60 * 60 * 24 * 7 });
+  const cache = new NodeCache({ stdTTL: 60 * 60 });
   return async (...args: A): Promise<R> => {
     const key = JSON.stringify(args);
     const cachedData = cache.get<R>(key);
