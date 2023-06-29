@@ -3,7 +3,7 @@ import NodeCache from "node-cache";
 import axios from "axios";
 import {createHash} from 'crypto';
 
-import cache from "../cache";
+import cache from "../../utils/cache";
 
 interface tiktokFetch {
 	music: {

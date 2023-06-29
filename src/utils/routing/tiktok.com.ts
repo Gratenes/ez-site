@@ -1,4 +1,4 @@
-import fetchTiktok from "@/utils/tiktok/index-old";
+import fetchTiktok from "@/depricated/tiktok/index-old";
 import convertToVideo from "@/utils/convertPictures";
 import axios from "axios";
 import {Application, Request, Response} from "express";
@@ -6,7 +6,7 @@ import trackViews, { updateEntry } from "@/utils/trackViews";
 import subDomain from "@/utils/subDomain";
 import checkDomainName from "@/utils/checkDomain";
 
-import settings from "../../config";
+import settings from "../../../config";
 import * as console from "console";
 import fs from "fs";
 

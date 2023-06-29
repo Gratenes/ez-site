@@ -2,7 +2,7 @@ import {Application, Request, Response} from "express";
 import trackViews from "@/utils/trackViews";
 import checkDomainName from "@/utils/checkDomain";
 
-import settings from "../../config";
+import settings from "../../../config";
 
 const redirectToNextJs = (req: Request, res: Response) => {
   res.redirect(`/embed/${req.params.id}?type=twitter`)

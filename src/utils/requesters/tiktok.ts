@@ -1,6 +1,7 @@
 // import cache npm package
 import axios from "axios";
 import cache from "../cache";
+import { pictureToVideo } from "../converters";
 import { embedFetch, embedMedia } from ".";
 
 interface settingsInterface {
@@ -79,25 +80,22 @@ async function tiktokFetch(
     });
   }
 
-  const thereMightBeAudio = firstElement?.video?.play_addr?.url_list
-    .filter((url: string) => url.includes("mp3"))
-    ?.at(0);
-  if (thereMightBeAudio) {
+  const customAudio = firstElement.added_sound_music_info;
+  if (customAudio) {
     media.push({
       type: "audio",
-      url: thereMightBeAudio || "",
+      url: customAudio.play_url.uri,
       thumbnail: null,
-      duration: firstElement?.video?.duration,
+      duration: customAudio.duration,
       height: firstElement?.video?.height,
       width: firstElement?.video?.width,
     });
   }
 
-  console.log(
-    firstElement?.aweme_id,
-    id,
-    firstElement?.aweme_id !== id
-  );
+  // remove audio from media
+  const mediaIsPhoto = media.filter((m) => m.type === "photo" || m.type === "video").every((m) => m.type === "photo");
+  const extendedMedia = mediaIsPhoto ? await pictureToVideo(media, firstElement?.aweme_id) : undefined;
+
   return {
     type: "tiktok",
     id: firstElement?.aweme_id,
@@ -117,6 +115,7 @@ async function tiktokFetch(
       id: firstElement?.aweme_id,
       text: firstElement?.desc,
       media: media,
+      generatedMedia: extendedMedia ? [extendedMedia] : undefined,
       statistics: {
         shares: firstElement?.statistics?.share_count || 0,
         comments: firstElement?.statistics?.comment_count || 0,

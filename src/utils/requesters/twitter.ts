@@ -41,7 +41,6 @@ const sfwTwitter = async ({ id }: { id: string }): embedFunction => {
       id: data.id_str,
       text: data.text,
       media: data.extended_entities.media.map((media: any): embedMedia => {
-        console.log(media);
         return {
           duration: media.video_info ? media.video_info.duration_millis : null,
           height: media.sizes.large.h,

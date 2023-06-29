@@ -1,6 +1,6 @@
 import { GetServerSidePropsContext } from "next";
 
-import providers, { medias } from "@/utils/requestData";
+import providers, { medias } from "@/utils/requesters";
 
 import EmbedPage from "@/components/embed/page";
 

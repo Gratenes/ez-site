@@ -81,8 +81,6 @@ async function instaFetch({ id }: { id: string }): embedFunction {
       });
     }
 
-    console.log(json);
-
     resolve({
       id,
       type: "instagram",
