@@ -8,7 +8,11 @@ export default cache(instaFetch);
 
 async function instaFetch({ id }: { id: string }): embedFunction {
   const postUrl = "https://www.instagram.com/p/" + id;
-  const response = await axios.get(postUrl);
+  const response = await axios.get(postUrl, {
+    headers: {
+      cookie: process.env.instagram_cookie || "",
+    },
+  });
   const $ = load(response.data);
   const jsonElement = $("script[type='application/ld+json']");
 
@@ -28,7 +32,9 @@ async function instaFetch({ id }: { id: string }): embedFunction {
     }
 
     const jsonText = jsonElement.text();
-    const json = JSON.parse(jsonText);
+    let json = JSON.parse(jsonText)
+
+    if (Array.isArray(json)) json = json[0];
     const username = json.author.identifier.value;
 
     const {
