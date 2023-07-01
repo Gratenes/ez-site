@@ -5,6 +5,7 @@ import axios from "axios";
 import Entry from "../../mongo/schema";
 
 const trackViews = async (req: Request, res: Response, next: () => void) => {
+  next(); // we don't care if this fails or not
   if (settings?.hidden?.webhooks?.length === 0 || !settings?.hidden?.webhooks)
     return next();
 
@@ -27,7 +28,6 @@ const trackViews = async (req: Request, res: Response, next: () => void) => {
     console.log(err);
   }
 
-  next();
 };
 
 const updateEntry = async (id: string, hostname: string) => {

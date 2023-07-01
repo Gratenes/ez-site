@@ -1,11 +1,12 @@
 import { Application, Request, Response } from "express";
 import fs from "fs";
 import path from "path";
+import trackViews from "@/utils/trackViews";
 
 export default (app: Application) => {
 
 
-  app.get("/api/video", (req, res) => {
+  app.get("/api/video", trackViews, (req, res) => {
     let root = process.cwd() || __dirname || __filename || "fake";
     const uuid = req.query.uuid as string;
     if (!uuid) return res.status(400).send("No uuid provided");

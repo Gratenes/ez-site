@@ -4,6 +4,8 @@ import providers, { medias } from "@/utils/requesters";
 
 import EmbedPage from "@/components/embed/page";
 
+import { updateEntry } from "@/utils/trackViews";
+
 // make a request to the server
 export const getServerSideProps = async (
   context: GetServerSidePropsContext
@@ -19,7 +21,7 @@ export const getServerSideProps = async (
     id: context.params?.id as string,
   }, {});
 
-  console.log(data)
+  updateEntry(context.params?.id as string, context.req.headers.host || 'unknown')
 
   return {
     props: {
