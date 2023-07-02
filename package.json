@@ -42,6 +42,7 @@
   "devDependencies": {
     "@types/animejs": "^3.1.7",
     "@types/express": "^4.17.17",
+    "@types/mongoose": "^5.11.97",
     "autoprefixer": "10.4.14",
     "cross-env": "^7.0.3",
     "postcss": "8.4.23",

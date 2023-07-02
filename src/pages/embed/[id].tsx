@@ -10,7 +10,7 @@ import { updateEntry } from "@/utils/trackViews";
 export const getServerSideProps = async (
   context: GetServerSidePropsContext
 ) => {
-  const { id, type } = context.query || {};
+  const { id, type, donttrack } = context.query || {};
   if (!type || typeof type !== 'string') return { notFound: true }
   if (!id) return { notFound: true }
 
@@ -21,7 +21,7 @@ export const getServerSideProps = async (
     id: context.params?.id as string,
   }, {});
 
-  updateEntry(context.params?.id as string, context.req.headers.host || 'unknown')
+  if (!donttrack) updateEntry(id as string, type as medias);
 
   return {
     props: {

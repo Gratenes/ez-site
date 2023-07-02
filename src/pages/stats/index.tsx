@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { Chart, registerables, ChartDataset } from "chart.js";
 import { GetServerSidePropsContext } from "next";
 
+import Entry from "mongo/schema";
 
 import moment from "moment";
 
@@ -9,7 +10,6 @@ import mongoose from "mongoose";
 import StatisticsChart from "@/components/statisticsChart";
 import Piechart from "@/components/pieChart";
 import StatsText from "./text";
-const Entry = mongoose.models.Entry;
 
 export const getServerSideProps = async (
   context: GetServerSidePropsContext

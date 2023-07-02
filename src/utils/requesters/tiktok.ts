@@ -115,7 +115,7 @@ async function tiktokFetch(
       id: firstElement?.aweme_id,
       text: firstElement?.desc,
       media: media,
-      generatedMedia: extendedMedia ? [extendedMedia] : undefined,
+      generatedMedia: extendedMedia ? [extendedMedia] : null,
       statistics: {
         shares: firstElement?.statistics?.share_count || 0,
         comments: firstElement?.statistics?.comment_count || 0,
