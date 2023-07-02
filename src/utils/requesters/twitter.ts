@@ -42,7 +42,7 @@ const sfwTwitter = async ({ id }: { id: string }): embedFunction => {
       text: data.text,
       media: data.extended_entities.media.map((media: any): embedMedia => {
         return {
-          duration: media.video_info ? media.video_info.duration_millis : null,
+          duration: media.video_info ? media.video_info.duration_millis || null : null,
           height: media.sizes.large.h,
           width: media.sizes.large.w,
           type: media.type,
@@ -128,7 +128,7 @@ const nsfwTwitter = async ({ id }: { id: string }): embedFunction => {
         media: media.map((media: any): embedMedia => {
           return {
             duration: media.video_info
-              ? media.video_info.duration_millis
+              ? media.video_info.duration_millis || null
               : null,
             height: media.sizes.large.h,
             width: media.sizes.large.w,

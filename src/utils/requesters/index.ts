@@ -45,7 +45,7 @@ export interface embedFetch {
     id: any;
     text: string | null;
     media: embedMedia[];
-    generatedMedia?: embedMedia[];
+    generatedMedia?: embedMedia[] | null;
     statistics: {
       shares: number;
       comments: number;

@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 import Head from "next/head";
 
-import { embedFetch, embedMedia } from "@/utils/types";
+import { embedFetch, embedMedia } from "@/utils/requesters";
 import { JsxElement } from "typescript";
 import { AlertContext } from "../alert";
 import { embedFetchError } from "@/utils/requesters";
@@ -343,9 +343,6 @@ export default (preload: any) => {
   const { n } = router.query;
 
   const displayed = (Number(n) ?? 1) - 1;
-
-  // @ts-ignore
-  console.log(data);
 
   return (
     <>

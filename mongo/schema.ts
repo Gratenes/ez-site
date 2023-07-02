@@ -21,6 +21,6 @@ const entrySchema = new mongoose.Schema({
 });
 
 // Create the model for the collection
-const Entry = mongoose.model('Entry', entrySchema, 'entries');
+const Entry = mongoose.models.Entry || mongoose.model('Entry', entrySchema, 'entries');
 
 export default Entry;
